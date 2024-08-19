@@ -1,2 +1,2 @@
 export { Application } from "./application";
-export { Entity } from "./entity";
+// export { Entity } from "./entity";

@@ -1,4 +1,4 @@
-import { Renderer } from "../renderer/renderer.ts";
+import { Renderer } from "../renderer";
 
 export class Application {
 	private _lastTime: number = 0;
