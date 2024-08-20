@@ -1,6 +1,6 @@
 import { gl } from "./renderer";
 
-export class Shader {
+export abstract class Shader {
 	private _name: string;
 	private _vertexSource: string;
 	private _fragmentSource: string;
@@ -61,5 +61,5 @@ export class Shader {
 		return program;
 	}
 
-	public render() {}
+	public abstract render(): void;
 }
