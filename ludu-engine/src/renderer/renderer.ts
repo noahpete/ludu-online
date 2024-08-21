@@ -1,10 +1,14 @@
-import { Shader } from ".";
+import { Camera, Shader } from ".";
+import { PerspectiveCamera } from "./perspective-camera";
 import { BasicShader } from "./shaders/basic-shader";
 
 export let gl: WebGL2RenderingContext;
 
 export class Renderer {
 	private static _canvas: HTMLCanvasElement;
+
+	// temp
+	private static _camera: Camera;
 
 	public static initialize(canvasId: string, width: number, height: number): void {
 		Renderer._canvas = document.getElementById(canvasId) as HTMLCanvasElement;
@@ -15,10 +19,15 @@ export class Renderer {
 		}
 
 		Renderer.resize(width, height);
+
+		this._camera = new PerspectiveCamera(50, 1, 1, 2000);
 	}
 
 	public static render(shader: Shader) {
-		shader.render();
+		// Clear the canvas
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		shader.render(this._camera);
 	}
 
 	public static resize(width: number, height: number): void {

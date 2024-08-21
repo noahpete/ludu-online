@@ -1,7 +1,5 @@
-import { gl, Shader } from "..";
-import { Matrix4x4 } from "../../math/matrix4x4";
-import { Vector3 } from "../../math/vector3";
-
+import { Camera, gl, Shader } from "..";
+import { Matrix4x4 } from "../../math";
 const vertexSource = `#version 300 es
 
     in vec4 a_position;
@@ -39,8 +37,6 @@ export class BasicShader extends Shader {
 		let positionAttributeLocation = gl.getAttribLocation(this._program, "a_position");
 		let colorAttributeLocation = gl.getAttribLocation(this._program, "a_color");
 
-		let matrixLocation = gl.getUniformLocation(this._program, "u_matrix");
-
 		let positionBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
@@ -67,24 +63,9 @@ export class BasicShader extends Shader {
 
 		// get data out of colorBuffer
 		gl.vertexAttribPointer(colorAttributeLocation, 3, gl.UNSIGNED_BYTE, true, 0, 0);
-
-		let translation = [0, 0];
-		let width = 100;
-		let color = [Math.random(), Math.random(), Math.random(), 1];
-		let rotation = [0, 1];
-		let scale = [1, 1];
-
-		// Should be in render function
-		gl.useProgram(this._program);
-		gl.bindVertexArray(this._vao);
-		let matrix = Matrix4x4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -400, 400);
-		let rotMat = Matrix4x4.rotationXYZ(0.6, 0.6, 0);
-		let transMat = Matrix4x4.translation(new Vector3(100, 100, 0));
-		let res = Matrix4x4.multiply(Matrix4x4.multiply(matrix, rotMat), transMat);
-		gl.uniformMatrix4fv(matrixLocation, false, res.toFloat32Array());
 	}
 
-	public render(): void {
+	public render(camera: Camera): void {
 		gl.useProgram(this._program);
 
 		gl.enable(gl.CULL_FACE);
@@ -92,21 +73,24 @@ export class BasicShader extends Shader {
 
 		gl.bindVertexArray(this._vao);
 
-		// Clear the canvas
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-		// Ensure matrices are calculated for every frame if they change
 		let matrixLocation = gl.getUniformLocation(this._program, "u_matrix");
-		let matrix = Matrix4x4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -400, 400);
-		let rotMat = Matrix4x4.rotationXYZ(0.6, 0.6, 0);
-		let transMat = Matrix4x4.translation(new Vector3(100, 100, 0));
-		let res = Matrix4x4.multiply(Matrix4x4.multiply(matrix, rotMat), transMat);
-		gl.uniformMatrix4fv(matrixLocation, false, res.toFloat32Array());
+		let projectionMatrix = camera.projectionMatrix;
+
+		let cameraMatrix = Matrix4x4.identity();
+		cameraMatrix.rotate(0, 30, 0);
+
+		let viewMatrix = Matrix4x4.inverse(cameraMatrix);
+
+		let viewProjectionMatrix = Matrix4x4.multiply(projectionMatrix, viewMatrix);
+
+		viewProjectionMatrix.translate(-130, 0, -360);
+		viewProjectionMatrix.rotate(180, 0, 0);
+		gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.toFloat32Array());
 
 		// Draw the geometry
 		let primitiveType = gl.TRIANGLES;
 		let offset = 0;
-		let count = 16 * 6; // Adjust this based on the actual number of vertices
+		let count = 16 * 6;
 		gl.drawArrays(primitiveType, offset, count);
 	}
 
