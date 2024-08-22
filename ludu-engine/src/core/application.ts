@@ -5,7 +5,7 @@ import { Scene } from "../scene";
 export class Application {
 	private _lastTime: number = 0;
 
-	// TODO: temp
+	// TODO: temp?
 	private static _activeScene: Scene;
 	private _basicShader: BasicShader;
 
@@ -38,6 +38,8 @@ export class Application {
 	public update(): void {
 		let dt = performance.now() - this._lastTime;
 		this._lastTime = performance.now();
+
+		Application.activeScene.root.update();
 	}
 
 	public render(): void {
