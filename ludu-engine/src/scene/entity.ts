@@ -1,8 +1,9 @@
 import { Application } from "../core";
-import { Transform } from "../math";
+import { Transform, Vector3 } from "../math";
 import { generateUUID } from "../util";
 import { Component } from "./component";
 import { TransformComponent } from "./components";
+import { CameraComponent } from "./components/camera-component";
 
 export class Entity {
 	private _id: number;
@@ -24,7 +25,7 @@ export class Entity {
 			Application.activeScene.addEntity(this);
 		}
 
-		this._transformComponent = new TransformComponent();
+		this._transformComponent = new TransformComponent(this);
 		this._components[this._transformComponent.id] = this._transformComponent;
 	}
 
@@ -57,6 +58,18 @@ export class Entity {
 		return this._components[component.id];
 	}
 
+	public addComponentByType(type: string, data?: any): Component | undefined {
+		switch (type) {
+			case "camera":
+				let component = new CameraComponent(this);
+				this.addComponent(component);
+				return component;
+
+			default:
+				return undefined;
+		}
+	}
+
 	public getComponentById(id: number): Component | null {
 		if (!this._components[id]) {
 			console.log(`Unable to find Component with id '${id}'`);
@@ -85,6 +98,20 @@ export class Entity {
 		return null;
 	}
 
+	/**
+	 *  Set the local position.
+	 */
+	public setPosition(x: number, y: number, z: number): void {
+		this.localTransform.position = new Vector3(x, y, z);
+	}
+
+	/**
+	 *  Set the local rotation.
+	 */
+	public setRotation(x: number, y: number, z: number): void {
+		this.localTransform.rotation = new Vector3(x, y, z);
+	}
+
 	public start() {
 		for (let [_, component] of Object.entries(this._components)) {
 			component.start();
@@ -92,14 +119,50 @@ export class Entity {
 	}
 
 	public update() {
+		this.updateWorldTransform();
+
 		for (let [_, component] of Object.entries(this._components)) {
 			component.update();
+		}
+
+		for (let [_, child] of Object.entries(this._children)) {
+			child.update();
 		}
 	}
 
 	public render() {
 		for (let [_, component] of Object.entries(this._components)) {
 			component.render();
+		}
+	}
+
+	private updateWorldTransform(): void {
+		if (this._parent) {
+			let parentTransform = this._parent.worldTransform;
+
+			this.worldTransform.position.x = parentTransform.position.x + this.localTransform.position.x;
+			this.worldTransform.position.y = parentTransform.position.y + this.localTransform.position.y;
+			this.worldTransform.position.z = parentTransform.position.z + this.localTransform.position.z;
+
+			this.worldTransform.rotation.x = parentTransform.rotation.x + this.localTransform.rotation.x;
+			this.worldTransform.rotation.y = parentTransform.rotation.y + this.localTransform.rotation.y;
+			this.worldTransform.rotation.z = parentTransform.rotation.z + this.localTransform.rotation.z;
+
+			this.worldTransform.scale.x = parentTransform.scale.x * this.localTransform.scale.x;
+			this.worldTransform.scale.y = parentTransform.scale.y * this.localTransform.scale.y;
+			this.worldTransform.scale.z = parentTransform.scale.z * this.localTransform.scale.z;
+		} else {
+			this.worldTransform.position.x = this.localTransform.position.x;
+			this.worldTransform.position.y = this.localTransform.position.y;
+			this.worldTransform.position.z = this.localTransform.position.z;
+
+			this.worldTransform.rotation.x = this.localTransform.rotation.x;
+			this.worldTransform.rotation.y = this.localTransform.rotation.y;
+			this.worldTransform.rotation.z = this.localTransform.rotation.z;
+
+			this.worldTransform.scale.x = this.localTransform.scale.x;
+			this.worldTransform.scale.y = this.localTransform.scale.y;
+			this.worldTransform.scale.z = this.localTransform.scale.z;
 		}
 	}
 }
