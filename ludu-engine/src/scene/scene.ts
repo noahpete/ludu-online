@@ -1,11 +1,18 @@
 import { Entity } from ".";
 
 export class Scene {
-	private _entities: Entity[] = [];
+	private _root: Entity;
 
-	public constructor() {}
+	public constructor() {
+		this._root = new Entity("__ROOT__");
+	}
+
+	public get root(): Entity {
+		return this._root;
+	}
 
 	public addEntity(entity: Entity) {
-		this._entities.push(entity);
+		entity.parent = this._root;
+		this._root.addChild(entity);
 	}
 }
