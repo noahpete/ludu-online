@@ -20,12 +20,18 @@ export class Renderer {
 
 		Renderer.resize(width, height);
 
-		this._camera = new PerspectiveCamera(50, 1, 1, 2000);
+		// this._camera = new PerspectiveCamera(50, 1, 1, 2000);
 	}
 
-	public static render(shader: Shader) {
+	public static set camera(camera: Camera) {
+		Renderer._camera = camera;
+	}
+
+	public static render(shader: Shader): void {
 		// Clear the canvas
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		if (!this._camera) return;
 
 		shader.render(this._camera);
 	}

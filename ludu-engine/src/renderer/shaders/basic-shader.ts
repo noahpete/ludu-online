@@ -76,8 +76,9 @@ export class BasicShader extends Shader {
 		let matrixLocation = gl.getUniformLocation(this._program, "u_matrix");
 		let projectionMatrix = camera.projectionMatrix;
 
-		let cameraMatrix = Matrix4x4.identity();
-		cameraMatrix.rotate(0, 30, 0);
+		// let cameraMatrix = Matrix4x4.identity();
+		// cameraMatrix.rotate(0, 30, 0);
+		let cameraMatrix = camera.transformMatrix;
 
 		let viewMatrix = Matrix4x4.inverse(cameraMatrix);
 
