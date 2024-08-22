@@ -4,14 +4,11 @@ export class Transform {
 	private _position: Vector3;
 	private _rotation: Vector3;
 	private _scale: Vector3;
-	private _matrix: Matrix4x4;
 
 	public constructor() {
 		this._position = Vector3.zero;
 		this._rotation = Vector3.zero;
 		this._scale = Vector3.one;
-
-		this._matrix = Matrix4x4.identity(); // TODO: change this
 	}
 
 	public get position(): Vector3 {
@@ -42,6 +39,9 @@ export class Transform {
 	}
 
 	public get matrix(): Matrix4x4 {
-		return this._matrix;
+		let translation = Matrix4x4.translation(this._position);
+		let rotation = Matrix4x4.rotationXYZ(this._rotation.x, this._rotation.y, this._rotation.z);
+		let scale = Matrix4x4.scale(this._scale);
+		return Matrix4x4.multiply(Matrix4x4.multiply(translation, rotation), scale);
 	}
 }
