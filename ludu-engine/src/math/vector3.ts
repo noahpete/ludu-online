@@ -206,6 +206,20 @@ export class Vector3 {
 		return this;
 	}
 
+	/**
+	 * Normalizes this vector (makes it unit length).
+	 * @returns The normalized vector.
+	 */
+	public normalize(): Vector3 {
+		const length = Math.sqrt(this._x * this._x + this._y * this._y + this._z * this._z);
+		if (length > 0) {
+			this._x /= length;
+			this._y /= length;
+			this._z /= length;
+		}
+		return this;
+	}
+
 	/** Clones this vector. */
 	public clone(): Vector3 {
 		return new Vector3(this._x, this._y, this._z);
