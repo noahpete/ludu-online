@@ -1,17 +1,18 @@
 import { Camera, gl, Shader } from "..";
-import { Matrix4x4 } from "../../math";
+import { Matrix4x4, Vector3 } from "../../math";
 const vertexSource = `#version 300 es
 
     in vec4 a_position;
-    in vec4 a_color;
+    in vec3 a_normal;
 
-    uniform mat4 u_matrix;
+    uniform mat4 u_worldViewProjection;
+    uniform mat4 u_worldInverseTranspose;
 
-    out vec4 v_color;
+    out vec3 v_normal;
 
     void main() {
-        gl_Position = u_matrix * a_position;
-        v_color = a_color;
+        gl_Position = u_worldViewProjection * a_position;
+        v_normal = mat3(u_worldInverseTranspose) * a_normal;
     }
 `;
 
@@ -19,12 +20,21 @@ const fragmentSource = `#version 300 es
 
     precision highp float;
 
-    in vec4 v_color;
+    in vec3 v_normal;
+
+    uniform vec3 u_reverseLightDirection;
+    uniform vec4 u_color;
 
     out vec4 outColor;
 
     void main() {
-        outColor = v_color;
+        vec3 normal = normalize(v_normal);
+
+        float light = dot(normal, u_reverseLightDirection);
+
+        outColor = u_color;
+
+        outColor.rgb *= light;
     }
 `;
 
@@ -34,8 +44,8 @@ export class BasicShader extends Shader {
 	public constructor() {
 		super("basic", vertexSource, fragmentSource);
 
-		let positionAttributeLocation = gl.getAttribLocation(this._program, "a_position");
-		let colorAttributeLocation = gl.getAttribLocation(this._program, "a_color");
+		let positionLocation = gl.getAttribLocation(this._program, "a_position");
+		let normalLocation = gl.getAttribLocation(this._program, "a_normal");
 
 		let positionBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -45,7 +55,7 @@ export class BasicShader extends Shader {
 
 		this._vao = gl.createVertexArray() as WebGLVertexArrayObject;
 		gl.bindVertexArray(this._vao);
-		gl.enableVertexAttribArray(positionAttributeLocation);
+		gl.enableVertexAttribArray(positionLocation);
 		this.setGeometry();
 
 		let size = 3;
@@ -53,16 +63,13 @@ export class BasicShader extends Shader {
 		let normalize = false;
 		let stride = 0;
 		let offset = 0;
-		gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+		gl.vertexAttribPointer(positionLocation, size, type, normalize, stride, offset);
 
-		// turn on color
-		let colorBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-		this.setColors();
-		gl.enableVertexAttribArray(colorAttributeLocation);
-
-		// get data out of colorBuffer
-		gl.vertexAttribPointer(colorAttributeLocation, 3, gl.UNSIGNED_BYTE, true, 0, 0);
+		let buffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+		gl.enableVertexAttribArray(normalLocation);
+		gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0);
+		this.setNormals();
 	}
 
 	public render(camera: Camera): void {
@@ -73,20 +80,51 @@ export class BasicShader extends Shader {
 
 		gl.bindVertexArray(this._vao);
 
-		let matrixLocation = gl.getUniformLocation(this._program, "u_matrix");
+		let worldViewProjectionLocation = gl.getUniformLocation(this._program, "u_worldViewProjection");
+		let worldInverseTransposeLocation = gl.getUniformLocation(
+			this._program,
+			"u_worldInverseTranspose"
+		);
+
+		let colorLocation = gl.getUniformLocation(this._program, "u_color");
+		let reverseLightDirectionLocation = gl.getUniformLocation(
+			this._program,
+			"u_reverseLightDirection"
+		);
+
 		let projectionMatrix = camera.projectionMatrix;
 
-		// let cameraMatrix = Matrix4x4.identity();
-		// cameraMatrix.rotate(0, 30, 0);
 		let cameraMatrix = camera.transformMatrix;
 
 		let viewMatrix = Matrix4x4.inverse(cameraMatrix);
 
-		let viewProjectionMatrix = Matrix4x4.multiply(projectionMatrix, viewMatrix);
+		let worldMatrix = Matrix4x4.rotationY(0);
+		// worldMatrix.rotate(180, -20, 0);
+		// worldMatrix.translate(40, -40, 0);
+		let worldInverseMatrix = Matrix4x4.inverse(worldMatrix);
+		let worldInverseTransposeMatrix = Matrix4x4.transpose(worldInverseMatrix);
 
-		viewProjectionMatrix.translate(-130, 0, -360);
-		viewProjectionMatrix.rotate(180, 0, 0);
-		gl.uniformMatrix4fv(matrixLocation, false, viewProjectionMatrix.toFloat32Array());
+		let viewProjectionMatrix = Matrix4x4.multiply(projectionMatrix, viewMatrix);
+		let worldViewProjectionMatrix = Matrix4x4.multiply(viewProjectionMatrix, worldMatrix);
+
+		// viewProjectionMatrix.translate(-130, 0, -360);
+		// viewProjectionMatrix.rotate(180, 0, 0);
+
+		gl.uniformMatrix4fv(
+			worldViewProjectionLocation,
+			false,
+			worldViewProjectionMatrix.toFloat32Array()
+		);
+		gl.uniformMatrix4fv(
+			worldInverseTransposeLocation,
+			false,
+			worldInverseTransposeMatrix.toFloat32Array()
+		);
+
+		gl.uniform4fv(colorLocation, [0.5, 0.5, 0.9, 1]);
+
+		let lightLocation = new Vector3(-0.5, -0.7, -16).normalize();
+		gl.uniform3fv(reverseLightDirectionLocation, lightLocation.toFloat32Array());
 
 		// Draw the geometry
 		let primitiveType = gl.TRIANGLES;
@@ -151,59 +189,56 @@ export class BasicShader extends Shader {
 		);
 	}
 
-	private setColors() {
-		gl.bufferData(
-			gl.ARRAY_BUFFER,
-			new Uint8Array([
-				// left column front
-				200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120,
+	private setNormals() {
+		var normals = new Float32Array([
+			// left column front
+			0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
 
-				// top rung front
-				200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120,
+			// top rung front
+			0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
 
-				// middle rung front
-				200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120,
+			// middle rung front
+			0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
 
-				// left column back
-				80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200,
+			// left column back
+			0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
 
-				// top rung back
-				80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200,
+			// top rung back
+			0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
 
-				// middle rung back
-				80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200,
+			// middle rung back
+			0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
 
-				// top
-				70, 200, 210, 70, 200, 210, 70, 200, 210, 70, 200, 210, 70, 200, 210, 70, 200, 210,
+			// top
+			0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
 
-				// top rung right
-				200, 200, 70, 200, 200, 70, 200, 200, 70, 200, 200, 70, 200, 200, 70, 200, 200, 70,
+			// top rung right
+			1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
 
-				// under top rung
-				210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70,
+			// under top rung
+			0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
 
-				// between top rung and middle
-				210, 160, 70, 210, 160, 70, 210, 160, 70, 210, 160, 70, 210, 160, 70, 210, 160, 70,
+			// between top rung and middle
+			1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
 
-				// top of middle rung
-				70, 180, 210, 70, 180, 210, 70, 180, 210, 70, 180, 210, 70, 180, 210, 70, 180, 210,
+			// top of middle rung
+			0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
 
-				// right of middle rung
-				100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210,
+			// right of middle rung
+			1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
 
-				// bottom of middle rung.
-				76, 210, 100, 76, 210, 100, 76, 210, 100, 76, 210, 100, 76, 210, 100, 76, 210, 100,
+			// bottom of middle rung.
+			0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
 
-				// right of bottom
-				140, 210, 80, 140, 210, 80, 140, 210, 80, 140, 210, 80, 140, 210, 80, 140, 210, 80,
+			// right of bottom
+			1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
 
-				// bottom
-				90, 130, 110, 90, 130, 110, 90, 130, 110, 90, 130, 110, 90, 130, 110, 90, 130, 110,
+			// bottom
+			0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
 
-				// left side
-				160, 160, 220, 160, 160, 220, 160, 160, 220, 160, 160, 220, 160, 160, 220, 160, 160, 220,
-			]),
-			gl.STATIC_DRAW
-		);
+			// left side
+			-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
+		]);
+		gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
 	}
 }
