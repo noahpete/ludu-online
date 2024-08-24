@@ -21,7 +21,7 @@ export class Matrix4x4 {
 	}
 
 	public rotate(x: number, y: number, z: number): void {
-		let rotationMatrix = Matrix4x4.rotationXYZ(degToRad(x), degToRad(y), degToRad(z));
+		let rotationMatrix = Matrix4x4.rotationXYZ(x, y, z);
 		this._data = Matrix4x4.multiply(this, rotationMatrix)._data;
 	}
 
@@ -126,13 +126,13 @@ export class Matrix4x4 {
 
 	/**
 	 * Creates a rotation matrix on the X axis from the provided angle in radians.
-	 * @param angleInRadians The angle in radians.
+	 * @param angle The angle in degrees.
 	 */
-	public static rotationX(angleInRadians: number): Matrix4x4 {
+	public static rotationX(angle: number): Matrix4x4 {
 		let m = new Matrix4x4();
 
-		let c = Math.cos(angleInRadians);
-		let s = Math.sin(angleInRadians);
+		let c = Math.cos(degToRad(angle));
+		let s = Math.sin(degToRad(angle));
 
 		m._data[5] = c;
 		m._data[6] = s;
@@ -144,13 +144,13 @@ export class Matrix4x4 {
 
 	/**
 	 * Creates a rotation matrix on the Y axis from the provided angle in radians.
-	 * @param angleInRadians The angle in radians.
+	 * @param angle The angle in degrees.
 	 */
-	public static rotationY(angleInRadians: number): Matrix4x4 {
+	public static rotationY(angle: number): Matrix4x4 {
 		let m = new Matrix4x4();
 
-		let c = Math.cos(angleInRadians);
-		let s = Math.sin(angleInRadians);
+		let c = Math.cos(degToRad(angle));
+		let s = Math.sin(degToRad(angle));
 
 		m._data[0] = c;
 		m._data[2] = -s;
@@ -162,13 +162,13 @@ export class Matrix4x4 {
 
 	/**
 	 * Creates a rotation matrix on the Z axis from the provided angle in radians.
-	 * @param angleInRadians The angle in radians.
+	 * @param angle The angle in degrees.
 	 */
-	public static rotationZ(angleInRadians: number): Matrix4x4 {
+	public static rotationZ(angle: number): Matrix4x4 {
 		let m = new Matrix4x4();
 
-		let c = Math.cos(angleInRadians);
-		let s = Math.sin(angleInRadians);
+		let c = Math.cos(degToRad(angle));
+		let s = Math.sin(degToRad(angle));
 
 		m._data[0] = c;
 		m._data[1] = s;
@@ -373,6 +373,29 @@ export class Matrix4x4 {
 			];
 			return m;
 		}
+	}
+
+	public static transpose(matrix: Matrix4x4): Matrix4x4 {
+		let m = new Matrix4x4();
+		m._data = [
+			matrix._data[0],
+			matrix._data[4],
+			matrix._data[8],
+			matrix._data[12],
+			matrix._data[1],
+			matrix._data[5],
+			matrix._data[9],
+			matrix._data[13],
+			matrix._data[2],
+			matrix._data[6],
+			matrix._data[10],
+			matrix._data[14],
+			matrix._data[3],
+			matrix._data[7],
+			matrix._data[11],
+			matrix._data[15],
+		];
+		return m;
 	}
 
 	/** Returns the data of this matrix as a Float32Array. */
