@@ -19,6 +19,10 @@ camera.setPosition(0, 0, -3);
 
 let cube = new ld.Entity("cube");
 cube.addComponentByType("model", { type: "cube" });
-cube.setRotation(0, 50, 0);
+// cube.setRotation(0, 50, 0);
+
+let light = new ld.Entity("light");
+light.addComponentByType("light", { type: "point" });
+light.setPosition(0.5, 1, -2);
 
 app.start();

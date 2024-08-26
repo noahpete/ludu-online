@@ -1,4 +1,5 @@
 import { Matrix4x4, Vector3 } from "../../math";
+import { Scene } from "../../scene";
 import { Camera } from "../camera";
 import { Mesh } from "../mesh";
 import { Model } from "../model";
@@ -43,21 +44,24 @@ export class Cube extends Model {
 		this._shader = new BasicMaterialShader();
 	}
 
-	public render(camera: Camera): void {
+	public render(camera: Camera, scene: Scene): void {
 		if (!this._shader || !this._mesh) return;
 
 		this._shader.use();
 
-		this._shader.setVec3("light.position", new Vector3(0, 1, -2));
 		this._shader.setVec3("viewPos", camera.position);
 
-		// Light properties
-		let lightColor = new Vector3(1, 1, 1);
-		let diffuseColor = lightColor.multiply(new Vector3(0.5, 0.5, 0.5));
-		let ambientColor = diffuseColor.multiply(new Vector3(0.5, 0.5, 0.5));
-		this._shader.setVec3("light.ambient", ambientColor);
-		this._shader.setVec3("light.diffuse", diffuseColor);
-		this._shader.setVec3("light.specular", new Vector3(1, 1, 1));
+		for (let lightEntity of scene.root.getChildrenWithComponentType("light")) {
+			this._shader.setVec3("light.position", lightEntity.worldPosition);
+
+			// Light properties
+			let lightColor = new Vector3(1, 1, 1);
+			let diffuseColor = lightColor.multiply(new Vector3(0.5, 0.5, 0.5));
+			let ambientColor = diffuseColor.multiply(new Vector3(0.5, 0.5, 0.5));
+			this._shader.setVec3("light.ambient", ambientColor);
+			this._shader.setVec3("light.diffuse", diffuseColor);
+			this._shader.setVec3("light.specular", new Vector3(1, 1, 1));
+		}
 
 		// Material properties
 		this._shader.setVec3("material.ambient", new Vector3(1, 0.5, 0.3));

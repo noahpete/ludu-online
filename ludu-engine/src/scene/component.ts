@@ -1,5 +1,7 @@
+import { Camera } from "../renderer";
 import { generateUUID } from "../util";
 import { Entity } from "./entity";
+import { Scene } from "./scene";
 
 export abstract class Component {
 	private _id: number;
@@ -16,6 +18,10 @@ export abstract class Component {
 		return this._id;
 	}
 
+	public get type(): string {
+		return this._type;
+	}
+
 	public get parent(): Entity {
 		return this._parent;
 	}
@@ -24,5 +30,5 @@ export abstract class Component {
 
 	public abstract update(): void;
 
-	public abstract render(): void;
+	public abstract render(camera: Camera, scene: Scene): void;
 }

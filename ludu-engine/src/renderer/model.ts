@@ -1,4 +1,5 @@
 import { Transform } from "../math";
+import { Scene } from "../scene";
 import { Camera } from "./camera";
 import { Mesh } from "./mesh";
 import { Shader } from "./shader";
@@ -15,5 +16,5 @@ export abstract class Model {
 
 	public setUniforms(): void {}
 
-	public abstract render(camera: Camera): void;
+	public abstract render(camera: Camera, scene: Scene): void;
 }

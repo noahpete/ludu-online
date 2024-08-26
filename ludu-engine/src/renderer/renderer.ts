@@ -34,7 +34,7 @@ export class Renderer {
 		if (!this._camera) return;
 
 		// cube.render(this._camera);
-		scene.root.render(this._camera);
+		scene.root.render(this._camera, scene);
 	}
 
 	public static resize(width: number, height: number): void {

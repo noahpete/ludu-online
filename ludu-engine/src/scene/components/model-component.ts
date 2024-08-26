@@ -3,6 +3,7 @@ import { Model } from "../../renderer/model";
 import { Cube } from "../../renderer/models/cube";
 import { Component } from "../component";
 import { Entity } from "../entity";
+import { Scene } from "../scene";
 
 export class ModelComponent extends Component {
 	private _model: Model;
@@ -27,7 +28,7 @@ export class ModelComponent extends Component {
 
 	public update(): void {}
 
-	public render(camera: Camera): void {
-		this._model.render(camera);
+	public render(camera: Camera, scene: Scene): void {
+		this._model.render(camera, scene);
 	}
 }

@@ -5,7 +5,9 @@ import { generateUUID } from "../util";
 import { Component } from "./component";
 import { TransformComponent } from "./components";
 import { CameraComponent } from "./components/camera-component";
+import { LightComponent } from "./components/light-component";
 import { ModelComponent } from "./components/model-component";
+import { Scene } from "./scene";
 
 export class Entity {
 	private _id: number;
@@ -67,6 +69,11 @@ export class Entity {
 				this.addComponent(component);
 				return component;
 			}
+			case "light": {
+				let component = new LightComponent(this);
+				this.addComponent(component);
+				return component;
+			}
 			case "model": {
 				let component = new ModelComponent(this, data);
 				this.addComponent(component);
@@ -76,6 +83,15 @@ export class Entity {
 			default:
 				return undefined;
 		}
+	}
+
+	public getComponentByType(type: string): Component | undefined {
+		for (let component of Object.values(this._components)) {
+			if (component.type === type) {
+				return component;
+			}
+		}
+		return undefined;
 	}
 
 	public getComponentById(id: number): Component | null {
@@ -104,6 +120,20 @@ export class Entity {
 		}
 
 		return null;
+	}
+
+	public getChildrenWithComponentType(type: string): Entity[] {
+		let children: Entity[] = [];
+
+		if (this.getComponentByType(type)) {
+			children.push(this);
+		}
+
+		for (let child of Object.values(this._children)) {
+			children = children.concat(child.getChildrenWithComponentType(type));
+		}
+
+		return children;
 	}
 
 	public get worldPosition(): Vector3 {
@@ -146,13 +176,13 @@ export class Entity {
 		}
 	}
 
-	public render(camera: Camera) {
+	public render(camera: Camera, scene: Scene) {
 		for (let [_, component] of Object.entries(this._components)) {
-			component.render(camera);
+			component.render(camera, scene);
 		}
 
 		for (let [_, child] of Object.entries(this._children)) {
-			child.render(camera);
+			child.render(camera, scene);
 		}
 	}
 
