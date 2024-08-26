@@ -1,4 +1,4 @@
-import { Matrix4x4 } from "../math";
+import { Matrix4x4, Transform, Vector3 } from "../math";
 
 export class Camera {
 	protected _projectionMatrix: Matrix4x4;
@@ -22,5 +22,10 @@ export class Camera {
 
 	public set transformMatrix(value: Matrix4x4) {
 		this._transformMatrix = value;
+	}
+
+	public get position(): Vector3 {
+		let matrix = this._transformMatrix.toFloat32Array();
+		return new Vector3(matrix[12], matrix[13], matrix[14]);
 	}
 }

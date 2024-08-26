@@ -30,6 +30,11 @@ export class Matrix4x4 {
 		this._data = Matrix4x4.multiply(this, scaleMatrix)._data;
 	}
 
+	public static translate(matrix: Matrix4x4, translation: Vector3): Matrix4x4 {
+		matrix.translate(translation.x, translation.y, translation.z);
+		return matrix;
+	}
+
 	/** Creates and returns an identity matrix. */
 	public static identity(): Matrix4x4 {
 		return new Matrix4x4();

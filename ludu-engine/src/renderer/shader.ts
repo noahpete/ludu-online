@@ -1,3 +1,5 @@
+import { Matrix4x4, Vector3, Vector4 } from "../math";
+import { Camera } from "./camera";
 import { gl } from "./renderer";
 
 export abstract class Shader {
@@ -61,5 +63,28 @@ export abstract class Shader {
 		return program;
 	}
 
-	public abstract render(): void;
+	public abstract render(camera: Camera): void;
+
+	public use(): void {
+		gl.useProgram(this._program);
+	}
+
+	public setFloat(uniform: string, float: number): void {
+		let location = gl.getUniformLocation(this._program, uniform);
+		gl.uniform1f(location, float);
+	}
+	public setVec3(uniform: string, vector: Vector3): void {
+		let location = gl.getUniformLocation(this._program, uniform);
+		gl.uniform3fv(location, [vector.x, vector.y, vector.z]);
+	}
+
+	public setVec4(uniform: string, vector: Vector4): void {
+		let location = gl.getUniformLocation(this._program, uniform);
+		gl.uniform4fv(location, [vector.x, vector.y, vector.z, vector.w]);
+	}
+
+	public setMat4(uniform: string, matrix: Matrix4x4): void {
+		let location = gl.getUniformLocation(this._program, uniform);
+		gl.uniformMatrix4fv(location, false, matrix.toFloat32Array());
+	}
 }

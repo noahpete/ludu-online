@@ -1,6 +1,4 @@
 import { Camera, Shader } from ".";
-import { PerspectiveCamera } from "./perspective-camera";
-import { BasicShader } from "./shaders/basic-shader";
 
 export let gl: WebGL2RenderingContext;
 
@@ -18,6 +16,8 @@ export class Renderer {
 			throw new Error("Unable to load WebGL2!");
 		}
 
+		gl.enable(gl.DEPTH_TEST);
+
 		Renderer.resize(width, height);
 
 		// this._camera = new PerspectiveCamera(50, 1, 1, 2000);
@@ -28,7 +28,6 @@ export class Renderer {
 	}
 
 	public static render(shader: Shader): void {
-		// Clear the canvas
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		if (!this._camera) return;

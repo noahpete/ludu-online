@@ -98,6 +98,14 @@ export class Entity {
 		return null;
 	}
 
+	public get worldPosition(): Vector3 {
+		return this.worldTransform.position;
+	}
+
+	public get localPosition(): Vector3 {
+		return this.localTransform.position;
+	}
+
 	/**
 	 *  Set the local position.
 	 */

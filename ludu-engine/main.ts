@@ -14,8 +14,8 @@ const app = new ld.Application();
 
 let camera = new ld.Entity("camera");
 camera.addComponentByType("camera");
-camera.setRotation(0, 0, 0);
-camera.setPosition(130, 0, 360);
+camera.setRotation(20, 0, 0);
+camera.setPosition(0, 0, -3);
 console.log(ld.Application.activeScene.root.getChildById(camera.id));
 
 app.start();

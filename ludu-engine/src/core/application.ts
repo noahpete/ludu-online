@@ -1,5 +1,5 @@
 import { Renderer } from "../renderer";
-import { BasicShader } from "../renderer/shaders/basic-shader";
+import { BasicMaterialShader } from "../renderer/shaders/basic-material-shader";
 import { Scene } from "../scene";
 
 export class Application {
@@ -7,7 +7,7 @@ export class Application {
 
 	// TODO: temp?
 	private static _activeScene: Scene;
-	private _basicShader: BasicShader;
+	private _shader: BasicMaterialShader;
 
 	public constructor() {
 		Renderer.initialize("app", 500, 500);
@@ -15,7 +15,7 @@ export class Application {
 		Application._activeScene = new Scene();
 
 		// temp
-		this._basicShader = new BasicShader();
+		this._shader = new BasicMaterialShader();
 	}
 
 	public static get activeScene(): Scene {
@@ -43,6 +43,6 @@ export class Application {
 	}
 
 	public render(): void {
-		Renderer.render(this._basicShader);
+		Renderer.render(this._shader);
 	}
 }
