@@ -1,4 +1,5 @@
 import { Renderer } from "../renderer";
+import { Cube } from "../renderer/models/cube";
 import { BasicMaterialShader } from "../renderer/shaders/basic-material-shader";
 import { Scene } from "../scene";
 
@@ -8,6 +9,7 @@ export class Application {
 	// TODO: temp?
 	private static _activeScene: Scene;
 	private _shader: BasicMaterialShader;
+	private _cube: Cube;
 
 	public constructor() {
 		Renderer.initialize("app", 500, 500);
@@ -16,6 +18,7 @@ export class Application {
 
 		// temp
 		this._shader = new BasicMaterialShader();
+		this._cube = new Cube();
 	}
 
 	public static get activeScene(): Scene {
@@ -43,6 +46,6 @@ export class Application {
 	}
 
 	public render(): void {
-		Renderer.render(this._shader);
+		Renderer.render(this._cube);
 	}
 }

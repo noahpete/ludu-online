@@ -73,99 +73,11 @@ const fragmentSource = `#version 300 es
 `;
 
 export class BasicMaterialShader extends Shader {
-	private _cubeVAO: WebGLVertexArrayObject;
-
 	public constructor() {
 		super("basic", vertexSource, fragmentSource);
-
-		let positions = [
-			-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5,
-			-0.5, -0.5,
-
-			-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5,
-			0.5,
-
-			-0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5,
-			0.5, 0.5,
-
-			0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5,
-			0.5,
-
-			-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
-			-0.5, -0.5,
-
-			-0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
-			-0.5,
-		];
-
-		let normals = [
-			0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0,
-			-1.0,
-
-			0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-
-			-1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0,
-			0.0,
-
-			1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-
-			0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0,
-			0.0,
-
-			0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-		];
-
-		// Create and bind the VAO
-		this._cubeVAO = gl.createVertexArray()!;
-		gl.bindVertexArray(this._cubeVAO);
-
-		// Create, bind, and populate the position VBO
-		let positionVBO = gl.createBuffer()!;
-		gl.bindBuffer(gl.ARRAY_BUFFER, positionVBO);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-		gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 3 * 4, 0);
-		gl.enableVertexAttribArray(0);
-
-		// Create, bind, and populate the normal VBO
-		let normalVBO = gl.createBuffer()!;
-		gl.bindBuffer(gl.ARRAY_BUFFER, normalVBO);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-		gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 3 * 4, 0);
-		gl.enableVertexAttribArray(1);
-
-		// Unbind the VAO
-		gl.bindVertexArray(null);
 	}
 
 	public render(camera: Camera): void {
 		gl.useProgram(this._program);
-
-		this.setVec3("light.position", new Vector3(0, 1, -2));
-		this.setVec3("viewPos", camera.position);
-
-		// Light properties
-		let lightColor = new Vector3(1, 1, 1);
-		let diffuseColor = lightColor.multiply(new Vector3(0.5, 0.5, 0.5));
-		let ambientColor = diffuseColor.multiply(new Vector3(0.5, 0.5, 0.5));
-		this.setVec3("light.ambient", ambientColor);
-		this.setVec3("light.diffuse", diffuseColor);
-		this.setVec3("light.specular", new Vector3(1, 1, 1));
-
-		// Material properties
-		this.setVec3("material.ambient", new Vector3(1, 0.5, 0.3));
-		this.setVec3("material.diffuse", new Vector3(1, 0.5, 0.3));
-		this.setVec3("material.specular", new Vector3(0.5, 0.5, 0.5));
-		this.setFloat("material.shininess", 32);
-
-		// View/projection transformations
-		this.setMat4("projection", camera.projectionMatrix);
-		this.setMat4("view", camera.transformMatrix);
-
-		this.setMat4("model", Matrix4x4.identity());
-
-		// Render the cube
-		gl.bindVertexArray(this._cubeVAO);
-		gl.drawArrays(gl.TRIANGLES, 0, 36);
-		gl.bindVertexArray(null);
 	}
 }

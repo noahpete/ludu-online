@@ -20,7 +20,7 @@ export abstract class Shader {
 		this._program = Shader.createProgram(vertexShader, fragmentShader);
 	}
 
-	public static create(source: string, type: GLenum): WebGLShader {
+	private static create(source: string, type: GLenum): WebGLShader {
 		let shader = gl.createShader(type);
 
 		if (!shader) {
@@ -40,7 +40,7 @@ export abstract class Shader {
 		return shader;
 	}
 
-	public static createProgram(
+	private static createProgram(
 		vertexShader: WebGLShader,
 		fragmentShader: WebGLShader
 	): WebGLProgram {
