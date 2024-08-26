@@ -1,5 +1,4 @@
 import { Camera, gl, Shader } from "..";
-import { Matrix4x4, Vector3 } from "../../math";
 
 const vertexSource = `#version 300 es
 
@@ -75,9 +74,5 @@ const fragmentSource = `#version 300 es
 export class BasicMaterialShader extends Shader {
 	public constructor() {
 		super("basic", vertexSource, fragmentSource);
-	}
-
-	public render(camera: Camera): void {
-		gl.useProgram(this._program);
 	}
 }

@@ -1,9 +1,11 @@
 import { Application } from "../core";
 import { Transform, Vector3 } from "../math";
+import { Camera } from "../renderer";
 import { generateUUID } from "../util";
 import { Component } from "./component";
 import { TransformComponent } from "./components";
 import { CameraComponent } from "./components/camera-component";
+import { ModelComponent } from "./components/model-component";
 
 export class Entity {
 	private _id: number;
@@ -60,10 +62,16 @@ export class Entity {
 
 	public addComponentByType(type: string, data?: any): Component | undefined {
 		switch (type) {
-			case "camera":
-				let component = new CameraComponent(this);
+			case "camera": {
+				let component = new CameraComponent(this, data);
 				this.addComponent(component);
 				return component;
+			}
+			case "model": {
+				let component = new ModelComponent(this, data);
+				this.addComponent(component);
+				return component;
+			}
 
 			default:
 				return undefined;
@@ -138,9 +146,13 @@ export class Entity {
 		}
 	}
 
-	public render() {
+	public render(camera: Camera) {
 		for (let [_, component] of Object.entries(this._components)) {
-			component.render();
+			component.render(camera);
+		}
+
+		for (let [_, child] of Object.entries(this._children)) {
+			child.render(camera);
 		}
 	}
 

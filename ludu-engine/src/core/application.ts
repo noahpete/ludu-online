@@ -42,10 +42,10 @@ export class Application {
 		let dt = performance.now() - this._lastTime;
 		this._lastTime = performance.now();
 
-		Application.activeScene.root.update();
+		Application._activeScene.root.update();
 	}
 
 	public render(): void {
-		Renderer.render(this._cube);
+		Renderer.render(Application._activeScene);
 	}
 }

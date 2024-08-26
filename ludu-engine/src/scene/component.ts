@@ -20,9 +20,9 @@ export abstract class Component {
 		return this._parent;
 	}
 
-	public start(): void {}
+	public abstract start(): void;
 
-	public update(): void {}
+	public abstract update(): void;
 
-	public render(): void {}
+	public abstract render(): void;
 }

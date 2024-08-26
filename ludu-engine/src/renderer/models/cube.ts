@@ -1,6 +1,7 @@
 import { Matrix4x4, Vector3 } from "../../math";
 import { Camera } from "../camera";
 import { Mesh } from "../mesh";
+import { Model } from "../model";
 import { Shader } from "../shader";
 import { BasicMaterialShader } from "../shaders/basic-material-shader";
 
@@ -35,16 +36,16 @@ const normals = [
 	0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
 ];
 
-export class Cube {
-	private _mesh: Mesh;
-	private _shader: Shader;
-
+export class Cube extends Model {
 	public constructor() {
+		super();
 		this._mesh = new Mesh(positions, normals);
 		this._shader = new BasicMaterialShader();
 	}
 
-	public render(camera: Camera) {
+	public render(camera: Camera): void {
+		if (!this._shader || !this._mesh) return;
+
 		this._shader.use();
 
 		this._shader.setVec3("light.position", new Vector3(0, 1, -2));
@@ -68,7 +69,7 @@ export class Cube {
 		this._shader.setMat4("projection", camera.projectionMatrix);
 		this._shader.setMat4("view", camera.transformMatrix);
 
-		this._shader.setMat4("model", Matrix4x4.identity());
+		this._shader.setMat4("model", this.transform.matrix);
 
 		this._mesh.render(this._shader);
 	}

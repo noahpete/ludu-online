@@ -6,7 +6,7 @@ import { Entity } from "../entity";
 export class CameraComponent extends Component {
 	private _camera: Camera;
 
-	public constructor(parent: Entity) {
+	public constructor(parent: Entity, data?: any) {
 		super("camera", parent);
 
 		let transformMatrix = this._parent.worldTransform.matrix;

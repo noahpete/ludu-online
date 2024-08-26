@@ -16,6 +16,9 @@ let camera = new ld.Entity("camera");
 camera.addComponentByType("camera");
 camera.setRotation(20, 0, 0);
 camera.setPosition(0, 0, -3);
-console.log(ld.Application.activeScene.root.getChildById(camera.id));
+
+let cube = new ld.Entity("cube");
+cube.addComponentByType("model", { type: "cube" });
+cube.setRotation(0, 50, 0);
 
 app.start();

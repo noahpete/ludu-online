@@ -1,5 +1,5 @@
-import { Camera, Shader } from ".";
-import { Cube } from "./models/cube";
+import { Camera } from ".";
+import { Scene } from "../scene";
 
 export let gl: WebGL2RenderingContext;
 
@@ -28,12 +28,13 @@ export class Renderer {
 		Renderer._camera = camera;
 	}
 
-	public static render(cube: Cube): void {
+	public static render(scene: Scene): void {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		if (!this._camera) return;
 
-		cube.render(this._camera);
+		// cube.render(this._camera);
+		scene.root.render(this._camera);
 	}
 
 	public static resize(width: number, height: number): void {
