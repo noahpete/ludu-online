@@ -67,6 +67,11 @@ export abstract class Shader {
 		gl.useProgram(this._program);
 	}
 
+	public setInt(uniform: string, int: number): void {
+		let location = gl.getUniformLocation(this._program, uniform);
+		gl.uniform1i(location, int);
+	}
+
 	public setFloat(uniform: string, float: number): void {
 		let location = gl.getUniformLocation(this._program, uniform);
 		gl.uniform1f(location, float);

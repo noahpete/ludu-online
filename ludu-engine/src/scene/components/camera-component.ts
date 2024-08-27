@@ -2,6 +2,7 @@ import { Camera, Renderer } from "../../renderer";
 import { PerspectiveCamera } from "../../renderer/perspective-camera";
 import { Component } from "../component";
 import { Entity } from "../entity";
+import { Scene } from "../scene";
 
 export class CameraComponent extends Component {
 	private _camera: Camera;
@@ -22,5 +23,5 @@ export class CameraComponent extends Component {
 		this._camera.transformMatrix = this._parent.worldTransform.matrix;
 	}
 
-	public render() {}
+	public render(camera: Camera, scene: Scene) {}
 }
