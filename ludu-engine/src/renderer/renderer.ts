@@ -18,6 +18,7 @@ export class Renderer {
 		}
 
 		gl.enable(gl.DEPTH_TEST);
+		// gl.enable(gl.CULL_FACE);
 
 		Renderer.resize(width, height);
 
