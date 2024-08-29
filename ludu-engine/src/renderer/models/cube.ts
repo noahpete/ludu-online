@@ -1,5 +1,5 @@
-import { Matrix4x4, Vector3 } from "../../math";
-import { Scene } from "../../scene";
+import { Matrix4x4, Vector3, Vector4 } from "../../math";
+import { Entity, Scene } from "../../scene";
 import { LightComponent } from "../../scene/components/light-component";
 import { Camera } from "../camera";
 import { Mesh } from "../mesh";
@@ -50,51 +50,38 @@ export class Cube extends Model {
 
 		this._shader.use();
 
-		this._shader.setVec3("viewPos", camera.position);
+		let projectionMatrix = camera.projectionMatrix;
+		let viewMatrix = Matrix4x4.inverse(camera.transformMatrix);
+		let worldMatrix = this.transform.matrix;
+
+		this._shader.setVec3("u_viewPosition", camera.position);
+		this._shader.setMat4("u_model", worldMatrix);
+		this._shader.setMat4("u_projection", projectionMatrix);
+		this._shader.setMat4("u_view", viewMatrix);
 
 		let lightEntities = scene.root.getChildrenWithComponentType("light");
 
-		this._shader.setInt("pointLightsCount", lightEntities.length);
+		this._shader.setInt("u_pointLightsCount", lightEntities.length);
 
 		for (let i = 0; i < lightEntities.length; i++) {
-			this._shader.setVec3(`pointLights[${i}].position`, lightEntities[i].worldPosition);
+			this._shader.setVec3(`u_pointLights[${i}].position`, lightEntities[i].worldPosition);
 
-			let lightColor = Vector3.one;
-			let diffuseColor = lightColor.multiply(new Vector3(0.5, 0.5, 0.5));
-			let ambientColor = diffuseColor.multiply(new Vector3(0.5, 0.5, 0.5));
+			let comp = lightEntities[i].getComponentByType("light") as LightComponent;
+			let light = comp.light;
 
-			this._shader.setVec3(`pointLights[${i}].ambient`, ambientColor);
-			this._shader.setVec3(`pointLights[${i}].diffuse`, diffuseColor);
-			this._shader.setVec3(`pointLights[${i}].specular`, new Vector3(1, 1, 1));
+			if (!light) continue;
 
-			this._shader.setFloat(`pointLights[${i}].constant`, 1);
-			this._shader.setFloat(`pointLights[${i}].linear`, 0.1);
-			this._shader.setFloat(`pointLights[${i}].quadratic`, 0.03);
+			let lightColor = light.diffuse;
+			let diffuseColor = lightColor.multiply(new Vector3(0.6, 0.6, 0.6));
+
+			this._shader.setVec3(`u_pointLights[${i}].ambient`, diffuseColor);
+			this._shader.setVec3(`u_pointLights[${i}].diffuse`, diffuseColor);
+			this._shader.setVec3(`u_pointLights[${i}].specular`, light.specular);
+
+			this._shader.setFloat(`u_pointLights[${i}].constant`, light.constant);
+			this._shader.setFloat(`u_pointLights[${i}].linear`, light.linear);
+			this._shader.setFloat(`u_pointLights[${i}].quadratic`, light.quadratic);
 		}
-
-		// for (let lightEntity of scene.root.getChildrenWithComponentType("light")) {
-		// 	this._shader.setVec3("light.position", lightEntity.worldPosition);
-
-		// 	// Light properties
-		// 	let lightColor = new Vector3(1, 1, 1);
-		// 	let diffuseColor = lightColor.multiply(new Vector3(0.5, 0.5, 0.5));
-		// 	let ambientColor = diffuseColor.multiply(new Vector3(0.5, 0.5, 0.5));
-		// 	this._shader.setVec3("light.ambient", ambientColor);
-		// 	this._shader.setVec3("light.diffuse", diffuseColor);
-		// 	this._shader.setVec3("light.specular", new Vector3(1, 1, 1));
-		// }
-
-		// Material properties
-		this._shader.setVec3("material.ambient", new Vector3(1, 0.5, 0.3));
-		this._shader.setVec3("material.diffuse", new Vector3(1, 0.5, 0.3));
-		this._shader.setVec3("material.specular", new Vector3(0.5, 0.5, 0.5));
-		this._shader.setFloat("material.shininess", 32);
-
-		// View/projection transformations
-		this._shader.setMat4("projection", camera.projectionMatrix);
-		this._shader.setMat4("view", camera.transformMatrix);
-
-		this._shader.setMat4("model", this.transform.matrix);
 
 		this._mesh.render(this._shader);
 	}

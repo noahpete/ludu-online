@@ -2,37 +2,26 @@ import { Camera, gl, Shader } from "..";
 
 const vertexSource = `#version 300 es
 
-    layout (location = 0) in vec3 aPos;
-	layout (location = 1) in vec3 aNormal;
+    layout (location = 0) in vec3 a_position;
+	layout (location = 1) in vec3 a_normal;
 
-	out vec3 FragPos;
-	out vec3 Normal;
+	out vec3 v_fragPosition;
+	out vec3 v_normal;
+	
+	uniform mat4 u_model;
+	uniform mat4 u_view;
+	uniform mat4 u_projection;
 
-	uniform mat4 model;
-	uniform mat4 view;
-	uniform mat4 projection;
-
-	void main()
-	{
-		FragPos = vec3(model * vec4(aPos, 1.0));
-		Normal = mat3(transpose(inverse(model))) * aNormal;  
-		
-		gl_Position = projection * view * vec4(FragPos, 1.0);
+	void main() {
+		v_fragPosition = vec3(u_model * vec4(a_position, 1.0));
+		v_normal = mat3(transpose(inverse(u_model))) * a_normal;
+		gl_Position = u_projection * u_view * vec4(v_fragPosition, 1.0);
 	}
 `;
 
 const fragmentSource = `#version 300 es
 
     precision highp float;
-
-	out vec4 FragColor;
-
-	struct Material {
-		vec3 ambient;
-		vec3 diffuse;
-		vec3 specular;    
-		float shininess;
-	}; 
 
 	struct PointLight {
 		vec3 position;
@@ -46,47 +35,57 @@ const fragmentSource = `#version 300 es
 		vec3 specular;
 	};
 
-	in vec3 FragPos;  
-	in vec3 Normal; 
+	in vec3 v_fragPosition;
+	in vec3 v_normal;
 
 	#define MAX_NUMBER_LIGHTS 32
-	
-	uniform vec3 viewPos;
-	uniform Material material;
-	uniform PointLight pointLights[MAX_NUMBER_LIGHTS];
 
-	uniform int pointLightsCount;
+	uniform PointLight u_pointLights[MAX_NUMBER_LIGHTS];
+	uniform int u_pointLightsCount;
+	uniform vec3 u_viewPosition;
 
-	vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+	out vec4 outColor;
 
-	void main()
-	{
-		vec3 norm = normalize(Normal);
-		vec3 viewDir = normalize(viewPos - FragPos);
+	vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
-		vec3 result;
-		for (int i = 0; i < pointLightsCount; i++)
-			result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
-		
-		FragColor = vec4(result, 1.0);
+	void main() {
+		vec3 normal = normalize(v_normal);
+		vec3 viewDir = normalize(u_viewPosition - v_fragPosition);
+
+		vec3 result = vec3(0.4, 0.4, 0.8);
+
+		for (int i = 0; i < u_pointLightsCount; i++) {
+			PointLight light = u_pointLights[i];
+			result += CalculatePointLight(light, normal, v_fragPosition, viewDir);
+		}
+
+		outColor = vec4(result, 1.0);
 	}
 
-	vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
-	{
+	vec3 CalculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 		vec3 lightDir = normalize(light.position - fragPos);
+
+		// ambient
+		vec3 ambient = light.ambient;
+
+		// diffuse
 		float diff = max(dot(normal, lightDir), 0.0);
+		vec3 diffuse = light.diffuse * diff;
+
+		// specular
 		vec3 reflectDir = reflect(-lightDir, normal);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 30.0); // shininess
+		vec3 specular = light.specular * spec;
+
+		// attenuation
 		float distance = length(light.position - fragPos);
 		float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-		
+
 		// combine results
-		vec3 ambient = light.ambient * material.ambient;
-		vec3 diffuse = light.diffuse * diff * material.ambient;
-		vec3 specular = light.specular * spec * material.ambient;
 		ambient *= attenuation;
 		diffuse *= attenuation;
 		specular *= attenuation;
+
 		return (ambient + diffuse + specular);
 	}
 `;
