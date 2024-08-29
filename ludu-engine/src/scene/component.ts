@@ -28,7 +28,7 @@ export abstract class Component {
 
 	public abstract start(): void;
 
-	public abstract update(): void;
+	public abstract update(dt: number): void;
 
 	public abstract render(camera: Camera, scene: Scene): void;
 }
