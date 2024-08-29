@@ -23,7 +23,7 @@ export class TransformComponent extends Component {
 
 	public start(): void {}
 
-	public update(): void {}
+	public update(dt: number): void {}
 
 	public render(): void {}
 }
