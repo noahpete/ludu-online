@@ -11,7 +11,7 @@ export class CameraComponent extends Component {
 		super("camera", parent);
 
 		let transformMatrix = this._parent.worldTransform.matrix;
-		this._camera = new PerspectiveCamera(45, 1, 0.1, 100, transformMatrix);
+		this._camera = new PerspectiveCamera(45, 1, 0.1, 2000, transformMatrix);
 
 		// temp
 		Renderer.camera = this._camera;
@@ -19,7 +19,7 @@ export class CameraComponent extends Component {
 
 	public start() {}
 
-	public update() {
+	public update(dt: number) {
 		this._camera.transformMatrix = this._parent.worldTransform.matrix;
 	}
 
