@@ -1,3 +1,4 @@
+import { Vector3 } from "../../math";
 import { Camera } from "../../renderer";
 import { PointLight } from "../../renderer/point-light";
 import { Component } from "../component";
@@ -18,11 +19,10 @@ export class LightComponent extends Component {
 			this._light = new PointLight();
 		}
 
-		if (data?.color) {
-			this._light.ambient = data.color;
-			this._light.diffuse = data.color;
-			this._light.specular = data.color;
-		}
+		// TODO: figure out why no color
+		this._light.ambient = data.color || new Vector3(0.1, 0.1, 0.1);
+		this._light.diffuse = data.color || new Vector3(0.4, 0.4, 0.4);
+		this._light.specular = data.color || new Vector3(0.8, 0.8, 0.8);
 	}
 
 	public get light(): PointLight {

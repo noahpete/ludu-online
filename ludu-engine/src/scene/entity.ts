@@ -72,7 +72,7 @@ export class Entity {
 				return component;
 			}
 			case "light": {
-				let component = new LightComponent(this);
+				let component = new LightComponent(this, data);
 				this.addComponent(component);
 				return component;
 			}

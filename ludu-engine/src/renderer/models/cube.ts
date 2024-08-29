@@ -59,6 +59,10 @@ export class Cube extends Model {
 		this._shader.setMat4("u_projection", projectionMatrix);
 		this._shader.setMat4("u_view", viewMatrix);
 
+		this._shader.setVec3("u_material.diffuse", this._material.diffuseColor);
+		this._shader.setVec3("u_material.specular", this._material.specularColor);
+		this._shader.setFloat("u_material.shininess", this._material.shininess);
+
 		let lightEntities = scene.root.getChildrenWithComponentType("light");
 
 		this._shader.setInt("u_pointLightsCount", lightEntities.length);
@@ -71,11 +75,8 @@ export class Cube extends Model {
 
 			if (!light) continue;
 
-			let lightColor = light.diffuse;
-			let diffuseColor = lightColor.multiply(new Vector3(0.6, 0.6, 0.6));
-
-			this._shader.setVec3(`u_pointLights[${i}].ambient`, diffuseColor);
-			this._shader.setVec3(`u_pointLights[${i}].diffuse`, diffuseColor);
+			this._shader.setVec3(`u_pointLights[${i}].ambient`, new Vector3(0.1, 0.1, 0.1));
+			this._shader.setVec3(`u_pointLights[${i}].diffuse`, new Vector3(0.6, 0.6, 0.6));
 			this._shader.setVec3(`u_pointLights[${i}].specular`, light.specular);
 
 			this._shader.setFloat(`u_pointLights[${i}].constant`, light.constant);
