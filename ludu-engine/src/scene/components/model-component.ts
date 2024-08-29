@@ -26,7 +26,7 @@ export class ModelComponent extends Component {
 
 	public start(): void {}
 
-	public update(): void {}
+	public update(dt: number): void {}
 
 	public render(camera: Camera, scene: Scene): void {
 		this._model.render(camera, scene);
