@@ -19,6 +19,8 @@ export class Entity {
 	private _children: { [key: number]: Entity } = {};
 	private _parent: Entity | undefined = undefined;
 
+	private _updateCallbacks: Array<(dt: number) => void> = [];
+
 	public constructor(name: string, parent?: Entity) {
 		this._id = generateUUID();
 		this._name = name;
@@ -158,22 +160,40 @@ export class Entity {
 		this.localTransform.rotation = new Vector3(x, y, z);
 	}
 
+	public rotate(dx: number, dy: number, dz: number): void {
+		let rotation = this.localTransform.rotation;
+		rotation.add(new Vector3(dx, dy, dz));
+		this.setRotation(rotation.x, rotation.y, rotation.z);
+	}
+
 	public start() {
 		for (let [_, component] of Object.entries(this._components)) {
 			component.start();
 		}
 	}
 
-	public update() {
+	public update(dt: number) {
 		this.updateWorldTransform();
 
+		for (let callback of this._updateCallbacks) {
+			callback(dt);
+		}
+
 		for (let [_, component] of Object.entries(this._components)) {
-			component.update();
+			component.update(dt);
 		}
 
 		for (let [_, child] of Object.entries(this._children)) {
-			child.update();
+			child.update(dt);
 		}
+	}
+
+	public addUpdateCallback(callback: (dt: number) => void): void {
+		this._updateCallbacks.push(callback);
+	}
+
+	public removeUpdateCallback(callback: (dt: number) => void): void {
+		this._updateCallbacks = this._updateCallbacks.filter((fn) => fn !== callback);
 	}
 
 	public render(camera: Camera, scene: Scene) {
