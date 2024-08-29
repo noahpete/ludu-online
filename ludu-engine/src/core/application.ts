@@ -42,7 +42,7 @@ export class Application {
 		let dt = performance.now() - this._lastTime;
 		this._lastTime = performance.now();
 
-		Application._activeScene.root.update();
+		Application._activeScene.root.update(dt);
 	}
 
 	public render(): void {
