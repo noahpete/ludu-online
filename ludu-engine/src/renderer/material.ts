@@ -1,5 +1,4 @@
 import { Vector3 } from "../math";
-import { Shader } from "./shader";
 
 export class Material {
 	public diffuseColor: Vector3;
@@ -8,9 +7,9 @@ export class Material {
 	// private _shader: Shader;
 
 	public constructor() {
-		this.diffuseColor = new Vector3(0.5, 0.5, 0.5);
+		this.diffuseColor = new Vector3(0.4, 0.4, 0.4);
 		this.specularColor = new Vector3(1.0, 1.0, 1.0);
-		this.shininess = 30;
+		this.shininess = 300;
 		// this._shader = new BasicShader();
 	}
 }
