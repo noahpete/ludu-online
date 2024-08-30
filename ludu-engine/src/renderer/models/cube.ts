@@ -1,61 +1,20 @@
-import { Matrix4x4, Vector3 } from "../../math";
-import { Entity, Scene } from "../../scene";
+import { Matrix4x4 } from "../../math";
+import { Scene } from "../../scene";
 import { LightComponent } from "../../scene/components/light-component";
 import { Camera } from "../camera";
-import { Mesh } from "../mesh";
 import { Model } from "../model";
 import { gl } from "../renderer";
-import { Shader } from "../shader";
 import { BasicMaterialShader } from "../shaders/basic-material-shader";
-
-const positions = [
-	-0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5,
-	-0.5,
-
-	-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5,
-
-	-0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5,
-
-	-0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
-	0.5,
-
-	-0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
-	-0.5,
-
-	0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5,
-];
-
-const normals = [
-	0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0,
-	0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, -1.0,
-	0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 1.0,
-	0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, -1.0,
-	0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 1.0,
-	0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-];
-
-const texcoords = [
-	0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0,
-
-	0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0,
-
-	0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0,
-
-	0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0,
-
-	0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0,
-
-	0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0,
-];
 
 export class Cube extends Model {
 	private texture: WebGLTexture | null = null;
 
 	public constructor() {
 		super();
-		this._mesh = new Mesh(positions, normals, texcoords);
+		this.loadObj("resources/cube.obj");
 		this._shader = new BasicMaterialShader();
-		this.loadTexture("resources/f.png");
+
+		// this.loadTexture("resources/f.png");
 	}
 
 	private loadTexture(url: string): void {
@@ -106,6 +65,7 @@ export class Cube extends Model {
 		}
 
 		// Set material properties
+		this._shader.setVec3("u_material.diffuse", this._material.diffuseColor);
 		this._shader.setVec3("u_material.specular", this._material.specularColor);
 		this._shader.setFloat("u_material.shininess", this._material.shininess);
 
