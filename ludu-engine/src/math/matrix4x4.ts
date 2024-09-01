@@ -273,6 +273,14 @@ export class Matrix4x4 {
 		return m;
 	}
 
+	public multiplyVector3(vector: Vector3): Vector3 {
+		const x = vector.x * this._data[0] + vector.y * this._data[4] + vector.z * this._data[8];
+		const y = vector.x * this._data[1] + vector.y * this._data[5] + vector.z * this._data[9];
+		const z = vector.x * this._data[2] + vector.y * this._data[6] + vector.z * this._data[10];
+
+		return new Vector3(x, y, z);
+	}
+
 	public static inverse(matrix: Matrix4x4): Matrix4x4 {
 		{
 			var m00 = matrix._data[0 * 4 + 0];
