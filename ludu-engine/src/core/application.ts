@@ -1,28 +1,35 @@
 import { Renderer } from "../renderer";
 import { Cube } from "../renderer/models/cube";
-import { BasicMaterialShader } from "../renderer/shaders/basic-material-shader";
+import { BasicShader } from "../renderer/shaders/basic-shader";
 import { Scene } from "../scene";
+import { Input } from "./input";
 
 export class Application {
 	private _lastTime: number = 0;
 
 	// TODO: temp?
 	private static _activeScene: Scene;
-	private _shader: BasicMaterialShader;
+	private static _currentFrame: number = 0;
+	private _shader: BasicShader;
 	private _cube: Cube;
 
 	public constructor() {
 		Renderer.initialize("app", 500, 500);
+		Input.initialize("app");
 
 		Application._activeScene = new Scene();
 
 		// temp
-		this._shader = new BasicMaterialShader();
+		this._shader = new BasicShader();
 		this._cube = new Cube();
 	}
 
 	public static get activeScene(): Scene {
 		return Application._activeScene;
+	}
+
+	public static get currentFrame(): number {
+		return Application._currentFrame;
 	}
 
 	public start(): void {
@@ -33,7 +40,9 @@ export class Application {
 		this.input();
 		this.update();
 		this.render();
+
 		requestAnimationFrame(this.loop.bind(this));
+		Application._currentFrame += 1;
 	}
 
 	public input(): void {}
@@ -43,6 +52,8 @@ export class Application {
 		this._lastTime = performance.now();
 
 		Application._activeScene.root.update(dt);
+
+		Input.update();
 	}
 
 	public render(): void {

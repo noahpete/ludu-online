@@ -1,6 +1,8 @@
 import { Camera } from "../../renderer";
 import { Model } from "../../renderer/model";
 import { Cube } from "../../renderer/models/cube";
+import { Grid } from "../../renderer/models/grid";
+import { Quad } from "../../renderer/models/quad";
 import { Component } from "../component";
 import { Entity } from "../entity";
 import { Scene } from "../scene";
@@ -14,6 +16,14 @@ export class ModelComponent extends Component {
 		switch (data?.type) {
 			case "cube":
 				this._model = new Cube();
+				break;
+
+			case "grid":
+				this._model = new Grid();
+				break;
+
+			case "quad":
+				this._model = new Quad();
 				break;
 
 			default:

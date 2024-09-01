@@ -160,10 +160,20 @@ export class Entity {
 		this.localTransform.rotation = new Vector3(x, y, z);
 	}
 
+	public setScale(x: number, y: number, z: number): void {
+		this.localTransform.scale = new Vector3(x, y, z);
+	}
+
 	public rotate(dx: number, dy: number, dz: number): void {
 		let rotation = this.localTransform.rotation;
 		rotation.add(new Vector3(dx, dy, dz));
 		this.setRotation(rotation.x, rotation.y, rotation.z);
+	}
+
+	public move(dx: number, dy: number, dz: number): void {
+		let translation = this.localTransform.position;
+		translation.add(new Vector3(dx, dy, dz));
+		this.setPosition(translation.x, translation.y, translation.z);
 	}
 
 	public start() {

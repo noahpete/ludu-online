@@ -1,18 +1,18 @@
-import { Matrix4x4, Vector4 } from "../../math";
+import { Matrix4x4, Vector3, Vector4 } from "../../math";
 import { Scene } from "../../scene";
 import { LightComponent } from "../../scene/components/light-component";
 import { Camera } from "../camera";
 import { Model } from "../model";
 import { gl } from "../renderer";
 import { BasicShader } from "../shaders/basic-shader";
-import { ColorShader } from "../shaders/color-shader";
+import { TextureShader } from "../shaders/texture-shader";
 
-export class Cube extends Model {
+export class Quad extends Model {
 	private texture: WebGLTexture | null = null;
 
 	public constructor() {
 		super();
-		this.loadObj("resources/cube.obj");
+		this.loadObj("resources/quad.obj");
 		this._shader = new BasicShader();
 
 		// this.loadTexture("resources/f.png");
@@ -65,6 +65,8 @@ export class Cube extends Model {
 			this._shader.setInt("u_texture", 0);
 		}
 
+		this._shader.setVec4("u_color", new Vector4(1.0, 0.2, 0.2, 1.0));
+
 		// Set material properties
 		this._shader.setVec3("u_material.diffuse", this._material.diffuseColor);
 		this._shader.setVec3("u_material.specular", this._material.specularColor);
@@ -72,7 +74,6 @@ export class Cube extends Model {
 
 		let lightEntities = scene.root.getChildrenWithComponentType("light");
 
-		this._shader.setVec4("u_color", new Vector4(0.0, 0.5, 0.8, 1.0));
 		this._shader.setInt("u_pointLightsCount", lightEntities.length);
 
 		for (let i = 0; i < lightEntities.length; i++) {
