@@ -12,19 +12,23 @@ camera.addUpdateCallback((dt) => {
 	let speed = 0.004;
 
 	if (ld.Input.getKey("w")) {
-		camera.move(0, 0, -speed * dt);
+		let dir = camera.worldTransform.forward;
+		camera.move(-speed * dt * dir.x, -speed * dt * dir.y, -speed * dt * dir.z);
 	}
 
 	if (ld.Input.getKey("s")) {
-		camera.move(0, 0, speed * dt);
+		let dir = camera.worldTransform.forward;
+		camera.move(speed * dt * dir.x, speed * dt * dir.y, speed * dt * dir.z);
 	}
 
 	if (ld.Input.getKey("a")) {
-		camera.move(-speed * dt, 0, 0);
+		let dir = camera.worldTransform.right;
+		camera.move(-speed * dt * dir.x, -speed * dt * dir.y, -speed * dt * dir.z);
 	}
 
 	if (ld.Input.getKey("d")) {
-		camera.move(speed * dt, 0, 0);
+		let dir = camera.worldTransform.right;
+		camera.move(speed * dt * dir.x, speed * dt * dir.y, speed * dt * dir.z);
 	}
 
 	// mouse controls
@@ -34,6 +38,10 @@ camera.addUpdateCallback((dt) => {
 
 	if (ld.Input.getMouseButton(1) && ld.Input.getMouseDeltaY()) {
 		camera.move(0, ld.Input.getMouseDeltaY() * 0.0004 * dt, 0);
+	}
+
+	if (ld.Input.getMouseDeltaX()) {
+		camera.rotate(0, ld.Input.getMouseDeltaX() * -0.005 * dt, 0);
 	}
 });
 
