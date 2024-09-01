@@ -1,4 +1,4 @@
-import { Matrix4x4, Vector3, Vector4 } from "../math";
+import { Matrix4x4, Vector2, Vector3, Vector4 } from "../math";
 import { Camera } from "./camera";
 import { gl } from "./renderer";
 
@@ -18,6 +18,10 @@ export abstract class Shader {
 		let fragmentShader = Shader.create(fragmentSrc, gl.FRAGMENT_SHADER);
 
 		this._program = Shader.createProgram(vertexShader, fragmentShader);
+	}
+
+	public get name(): string {
+		return this._name;
 	}
 
 	public static create(source: string, type: GLenum): WebGLShader {
@@ -76,6 +80,11 @@ export abstract class Shader {
 		let location = gl.getUniformLocation(this._program, uniform);
 		gl.uniform1f(location, float);
 	}
+	public setVec2(uniform: string, vector: Vector2): void {
+		let location = gl.getUniformLocation(this._program, uniform);
+		gl.uniform2fv(location, [vector.x, vector.y]);
+	}
+
 	public setVec3(uniform: string, vector: Vector3): void {
 		let location = gl.getUniformLocation(this._program, uniform);
 		gl.uniform3fv(location, [vector.x, vector.y, vector.z]);
