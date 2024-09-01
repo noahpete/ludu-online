@@ -44,4 +44,29 @@ export class Transform {
 		let scale = Matrix4x4.scale(this._scale);
 		return Matrix4x4.multiply(Matrix4x4.multiply(translation, rotation), scale);
 	}
+
+	public get forward(): Vector3 {
+		const forward = new Vector3(0, 0, 1);
+		return this.transformDirection(forward);
+	}
+
+	public get right(): Vector3 {
+		const right = new Vector3(1, 0, 0);
+		return this.transformDirection(right);
+	}
+
+	public get up(): Vector3 {
+		const up = new Vector3(0, 1, 0);
+		return this.transformDirection(up);
+	}
+
+	private transformDirection(direction: Vector3): Vector3 {
+		const rotationMatrix = Matrix4x4.rotationXYZ(
+			this._rotation.x,
+			this._rotation.y,
+			this._rotation.z
+		);
+		const transformedDirection = rotationMatrix.multiplyVector3(direction);
+		return transformedDirection.normalize();
+	}
 }
