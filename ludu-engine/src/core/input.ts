@@ -8,15 +8,34 @@ export class Input {
 	private static _buttons: Map<number, boolean> = new Map<number, boolean>();
 	private static _prevButtons: Map<number, boolean> = new Map<number, boolean>();
 
+	private static _isCanvasActive: boolean = false;
+
 	public static initialize(canvasId: string): void {
 		let canvas = document.getElementById(canvasId) as HTMLCanvasElement;
 
+		if (!canvas) {
+			console.error(`Canvas with ID ${canvasId} not found.`);
+			return;
+		}
+
+		// Attach event listeners to the canvas
 		canvas.addEventListener("keydown", Input.onKeyDown);
 		canvas.addEventListener("keyup", Input.onKeyUp);
 
 		canvas.addEventListener("mousemove", Input.onMouseMove);
 		canvas.addEventListener("mousedown", Input.onMouseDown);
 		canvas.addEventListener("mouseup", Input.onMouseUp);
+
+		// Attach focus and blur event listeners
+		canvas.addEventListener("mousedown", () => (Input._isCanvasActive = true));
+		canvas.addEventListener("mouseleave", () => (Input._isCanvasActive = false));
+
+		// Optionally, you can also handle the focus/blur of the window to cover cases where the canvas might lose focus
+		window.addEventListener(
+			"focus",
+			() => (Input._isCanvasActive = document.activeElement === canvas)
+		);
+		window.addEventListener("blur", () => (Input._isCanvasActive = false));
 	}
 
 	public static getKey(key: string): boolean {
@@ -66,28 +85,38 @@ export class Input {
 	}
 
 	private static onKeyDown(event: KeyboardEvent): boolean {
-		Input._keys.set(event.key, true);
+		if (Input._isCanvasActive) {
+			Input._keys.set(event.key, true);
+		}
 		return true;
 	}
 
 	private static onKeyUp(event: KeyboardEvent): boolean {
-		Input._keys.set(event.key, false);
+		if (Input._isCanvasActive) {
+			Input._keys.set(event.key, false);
+		}
 		return true;
 	}
 
 	private static onMouseMove(event: MouseEvent): boolean {
-		Input._mouseDelta.x = event.movementX;
-		Input._mouseDelta.y = event.movementY;
+		if (Input._isCanvasActive) {
+			Input._mouseDelta.x = event.movementX;
+			Input._mouseDelta.y = event.movementY;
+		}
 		return true;
 	}
 
 	private static onMouseDown(event: MouseEvent): boolean {
-		Input._buttons.set(event.button, true);
+		if (Input._isCanvasActive) {
+			Input._buttons.set(event.button, true);
+		}
 		return true;
 	}
 
 	private static onMouseUp(event: MouseEvent): boolean {
-		Input._buttons.set(event.button, false);
+		if (Input._isCanvasActive) {
+			Input._buttons.set(event.button, false);
+		}
 		return true;
 	}
 }

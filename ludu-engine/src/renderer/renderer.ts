@@ -11,6 +11,11 @@ export class Renderer {
 
 	public static initialize(canvasId: string, width: number, height: number): void {
 		Renderer._canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+
+		Renderer._canvas.addEventListener("click", () => {
+			Renderer._canvas.requestPointerLock();
+		});
+
 		gl = Renderer._canvas.getContext("webgl2") as WebGL2RenderingContext;
 
 		if (!gl) {
