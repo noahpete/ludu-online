@@ -20,6 +20,10 @@ export class Camera {
 		return this._transformMatrix;
 	}
 
+	public set projectionMatrix(value: Matrix4x4) {
+		this._projectionMatrix = value;
+	}
+
 	public set transformMatrix(value: Matrix4x4) {
 		this._transformMatrix = value;
 	}

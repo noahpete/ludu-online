@@ -1,5 +1,6 @@
 import { Camera } from ".";
 import { Scene } from "../scene";
+import { PerspectiveCamera } from "./perspective-camera";
 
 export let gl: WebGL2RenderingContext;
 
@@ -9,7 +10,7 @@ export class Renderer {
 	// temp
 	private static _camera: Camera;
 
-	public static initialize(canvasId: string, width: number, height: number): void {
+	public static initialize(canvasId: string): void {
 		Renderer._canvas = document.getElementById(canvasId) as HTMLCanvasElement;
 
 		Renderer._canvas.addEventListener("click", () => {
@@ -25,7 +26,9 @@ export class Renderer {
 		gl.enable(gl.DEPTH_TEST);
 		// gl.enable(gl.CULL_FACE);
 
-		Renderer.resize(width, height);
+		gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+		Renderer.resize(Renderer._canvas.width, Renderer._canvas.height);
 
 		// this._camera = new PerspectiveCamera(50, 1, 1, 2000);
 	}
@@ -43,11 +46,35 @@ export class Renderer {
 		scene.root.render(this._camera, scene);
 	}
 
-	public static resize(width: number, height: number): void {
-		Renderer._canvas.style.width = width + "px";
-		Renderer._canvas.style.height = height + "px";
-		Renderer._canvas.width = width;
-		Renderer._canvas.height = height;
-		gl.viewport(0, 0, width, height);
+	public static resize(width?: number, height?: number): void {
+		if (!Renderer._canvas) {
+			console.warn("Canvas is not initialized.");
+			return;
+		}
+
+		if (width && height) {
+			Renderer._canvas.style.width = width + "px";
+			Renderer._canvas.style.height = height + "px";
+			Renderer._canvas.width = width;
+			Renderer._canvas.height = height;
+			gl.viewport(0, 0, width, height);
+		} else {
+			// Handle case where width and height are not provided
+			Renderer._canvas.style.width = "100%";
+			Renderer._canvas.style.height = "100%";
+			Renderer._canvas.width = Renderer._canvas.clientWidth;
+			Renderer._canvas.height = Renderer._canvas.clientHeight;
+			gl.viewport(0, 0, Renderer._canvas.width, Renderer._canvas.height);
+		}
+
+		if (Renderer._camera instanceof PerspectiveCamera) {
+			let camera = Renderer._camera as PerspectiveCamera;
+			camera.updateMatrix(
+				camera.fov,
+				Renderer._canvas.width / Renderer._canvas.height,
+				camera.near,
+				camera.far
+			);
+		}
 	}
 }
