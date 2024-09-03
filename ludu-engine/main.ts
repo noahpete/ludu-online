@@ -1,6 +1,6 @@
-import * as ld from "./src";
+import * as ld from ".";
 
-const app = new ld.Application();
+const app = new ld.Application("app");
 
 // camera
 let camera = new ld.Entity("camera");
