@@ -11,6 +11,11 @@ export class Scene {
 		return this._root;
 	}
 
+	/**
+	 * Add an Entity to this Scene's root object.
+	 *
+	 * @param entity - The Entity to add.
+	 */
 	public addEntity(entity: Entity) {
 		entity.parent = this._root;
 		this._root.addChild(entity);
