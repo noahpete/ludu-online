@@ -13,9 +13,9 @@ export class Application {
 	private _shader: BasicShader;
 	private _cube: Cube;
 
-	public constructor() {
-		Renderer.initialize("app", 500, 500);
-		Input.initialize("app");
+	public constructor(canvasId: string) {
+		Renderer.initialize(canvasId);
+		Input.initialize(canvasId);
 
 		Application._activeScene = new Scene();
 
