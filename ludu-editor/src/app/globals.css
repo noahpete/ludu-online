@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--background-primary: #303030;
+	--background-secondary: #161616;
+}
