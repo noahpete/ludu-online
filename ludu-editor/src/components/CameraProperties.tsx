@@ -19,7 +19,9 @@ export default function CameraProperties({
 			cameraComponent.switchToOrthographic();
 		}
 
+		// TODO: temp?
 		ld.Renderer.camera = cameraComponent.camera;
+		ld.Renderer.resize();
 	}, [cameraType]);
 
 	return (
