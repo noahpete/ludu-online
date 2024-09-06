@@ -51,12 +51,32 @@ export class Entity {
 		this._parent = parent;
 	}
 
+	public get children(): Entity[] {
+		const entities: Entity[] = [];
+
+		for (let [_, child] of Object.entries(this._children)) {
+			entities.push(child);
+		}
+
+		return entities;
+	}
+
 	public get localTransform(): Transform {
 		return this._transformComponent.localTransform;
 	}
 
 	public get worldTransform(): Transform {
 		return this._transformComponent.worldTransform;
+	}
+
+	public get components(): Component[] {
+		const comps: Component[] = [];
+
+		for (let [_, comp] of Object.entries(this._components)) {
+			comps.push(comp);
+		}
+
+		return comps;
 	}
 
 	public addComponent(component: Component): Component {
@@ -85,6 +105,15 @@ export class Entity {
 			default:
 				return undefined;
 		}
+	}
+
+	public hasComponentType(type: string): boolean {
+		for (let component of Object.values(this._components)) {
+			if (component.type === type) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public getComponentByType(type: string): Component | undefined {
