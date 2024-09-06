@@ -16,7 +16,7 @@ export default function InputDropdown({
 		<div className="relative flex flex-col items-center w-32">
 			<button
 				onClick={() => setIsOpen((prev: boolean) => !prev)}
-				className="bg-white bg-opacity-50 text-black rounded-md w-full p-0.5 flex items-center border-2 border-transparent hover:border-white hover:text-white"
+				className="bg-white bg-opacity-50 text-black pl-1 rounded-md w-full p-0.5 flex items-center border-2 border-transparent hover:border-white hover:text-white"
 			>
 				{selected.charAt(0).toUpperCase() + selected.slice(1)}
 				{isOpen ? <FaCaretUp className="ml-auto" /> : <FaCaretDown className="ml-auto" />}
