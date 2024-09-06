@@ -7,15 +7,15 @@ export let gl: WebGL2RenderingContext;
 export class Renderer {
 	private static _canvas: HTMLCanvasElement;
 
-	// temp
+	// temp?
 	private static _camera: Camera;
 
 	public static initialize(canvasId: string): void {
 		Renderer._canvas = document.getElementById(canvasId) as HTMLCanvasElement;
 
-		Renderer._canvas.addEventListener("click", () => {
-			Renderer._canvas.requestPointerLock();
-		});
+		// Renderer._canvas.addEventListener("click", () => {
+		// 	Renderer._canvas.requestPointerLock();
+		// });
 
 		gl = Renderer._canvas.getContext("webgl2") as WebGL2RenderingContext;
 
@@ -29,8 +29,6 @@ export class Renderer {
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
 		Renderer.resize(Renderer._canvas.width, Renderer._canvas.height);
-
-		// this._camera = new PerspectiveCamera(50, 1, 1, 2000);
 	}
 
 	public static set camera(camera: Camera) {
@@ -42,7 +40,6 @@ export class Renderer {
 
 		if (!this._camera) return;
 
-		// cube.render(this._camera);
 		scene.root.render(this._camera, scene);
 	}
 
@@ -59,11 +56,8 @@ export class Renderer {
 			Renderer._canvas.height = height;
 			gl.viewport(0, 0, width, height);
 		} else {
-			// Handle case where width and height are not provided
 			Renderer._canvas.style.width = "100%";
 			Renderer._canvas.style.height = "100%";
-			Renderer._canvas.width = Renderer._canvas.clientWidth;
-			Renderer._canvas.height = Renderer._canvas.clientHeight;
 			gl.viewport(0, 0, Renderer._canvas.width, Renderer._canvas.height);
 		}
 
