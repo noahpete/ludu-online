@@ -1,6 +1,4 @@
 import { Renderer } from "../renderer";
-import { Cube } from "../renderer/models/cube";
-import { BasicShader } from "../renderer/shaders/basic-shader";
 import { Scene } from "../scene";
 import { Input } from "./input";
 
@@ -10,18 +8,12 @@ export class Application {
 	// TODO: temp?
 	private static _activeScene: Scene;
 	private static _currentFrame: number = 0;
-	private _shader: BasicShader;
-	private _cube: Cube;
 
 	public constructor(canvasId: string) {
 		Renderer.initialize(canvasId);
 		Input.initialize(canvasId);
 
 		Application._activeScene = new Scene();
-
-		// temp
-		this._shader = new BasicShader();
-		this._cube = new Cube();
 	}
 
 	public static get activeScene(): Scene {
