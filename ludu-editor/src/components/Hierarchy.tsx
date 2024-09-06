@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import MyPanel from "./MyPanel";
-import GameContext from "@/contexts/GameContext";
+import GameContext from "src/contexts/GameContext";
 
 import * as ld from "ludu-engine";
 

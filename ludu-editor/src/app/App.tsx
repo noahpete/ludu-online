@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import ResizeHandle from "@/components/ResizeHandle";
+import ResizeHandle from "src/components/ResizeHandle";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import Viewport from "@/components/Viewport";
-import GameContext from "@/contexts/GameContext";
+import Viewport from "src/components/Viewport";
+import GameContext from "src/contexts/GameContext";
 
 import * as ld from "ludu-engine";
-import MyPanel from "@/components/MyPanel";
-import Hierarchy from "@/components/Hierarchy";
-import Properties from "@/components/Properties";
+import MyPanel from "src/components/MyPanel";
+import Hierarchy from "src/components/Hierarchy";
+import Properties from "src/components/Properties";
 
 export default function App() {
 	const [app, setApp] = useState<ld.Application | null>(null);
@@ -26,8 +26,6 @@ export default function App() {
 		let cube = new ld.Entity("cube");
 		cube.addComponentByType("model", { type: "cube" });
 		cube.setRotation(0, 0, 0);
-
-		cube.addUpdateCallback((dt) => cube.rotate(0.01 * dt, 0.02 * dt, 0));
 
 		// grid
 		let grid = new ld.Entity("grid");
