@@ -17,10 +17,14 @@ export default function App() {
 		const application = new ld.Application("__APP__");
 		setApp(application);
 
-		let camera = new ld.Entity("camera");
-		camera.addComponentByType("camera");
+		const camera = new ld.Entity("__CAMERA__");
+		const camComp = camera.addComponentByType("camera", {
+			type: "orthographic",
+		}) as ld.CameraComponent;
 		camera.setRotation(0, 0, 0);
 		camera.setPosition(0, 1, 4);
+
+		ld.Renderer.camera = camComp.camera;
 
 		// cube
 		let cube = new ld.Entity("cube");
@@ -28,7 +32,7 @@ export default function App() {
 		cube.setRotation(0, 0, 0);
 
 		// grid
-		let grid = new ld.Entity("grid");
+		let grid = new ld.Entity("__GRID__");
 		grid.addComponentByType("model", { type: "grid" });
 		grid.rotate(-90, 0, 0);
 		grid.move(-5, 0, 5);
@@ -42,6 +46,10 @@ export default function App() {
 		let light2 = new ld.Entity("light2");
 		light2.addComponentByType("light", { type: "point", color: new ld.Vector3(0.4, 0.4, 0.4) });
 		light2.setPosition(3, 0, 2);
+
+		cube.addUpdateCallback((dt: number) => {
+			cube.rotate(0.01 * dt, 0.02 * dt, 0);
+		});
 
 		application.start();
 
