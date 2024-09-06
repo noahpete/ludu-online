@@ -5,20 +5,23 @@ export default function InputSlider({
 	value,
 	setValue,
 	bgColor,
+	rate = 0.01,
 }: {
 	text: string;
 	value: number;
 	setValue: (value: number) => void;
 	bgColor: string;
+	rate: number;
 }) {
+	// Adapted from https://codesandbox.io/p/sandbox/drag-number-input-z2rnj?file=%2Fsrc%2FApp.js%3A21%2C1
+
 	const [snapshot, setSnapshot] = useState(value);
 	const [startVal, setStartVal] = useState(0);
 
 	useEffect(() => {
 		const onUpdate = (event: MouseEvent) => {
 			if (startVal) {
-				const rate = 0.1;
-				setValue(snapshot + rate * (event.clientX - startVal));
+				setValue(parseFloat((snapshot + rate * (event.clientX - startVal)).toFixed(2)));
 			}
 		};
 
@@ -44,19 +47,27 @@ export default function InputSlider({
 	);
 
 	const onInputChange = useCallback(
-		(event: React.ChangeEvent<HTMLInputElement>) => setValue(parseFloat(event.target.value)),
-		[]
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			// Parse and round to 2 decimal places before setting the value
+			const parsedValue = parseFloat(parseFloat(event.target.value).toFixed(2));
+			setValue(isNaN(parsedValue) ? 0 : parsedValue);
+		},
+		[setValue]
 	);
 
 	return (
 		<div className="flex">
 			<span
-				className={`ml-auto ${bgColor} w-6 text-center cursor-ew-resize select-none`}
+				className={`ml-auto ${bgColor} px-2 text-center cursor-ew-resize select-none`}
 				onMouseDown={onStart}
 			>
 				<p>{text}</p>
 			</span>
-			<input className="w-8 text-black text-center" value={value} onChange={onInputChange} />
+			<input
+				className="w-12 text-black text-center"
+				value={value.toFixed(2)}
+				onChange={onInputChange}
+			/>
 		</div>
 	);
 }
