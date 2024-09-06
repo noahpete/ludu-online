@@ -4,6 +4,7 @@ import { Input } from "./input";
 
 export class Application {
 	private _lastTime: number = 0;
+	private _play: boolean = false;
 
 	// TODO: temp?
 	private static _activeScene: Scene;
@@ -28,13 +29,23 @@ export class Application {
 		this.loop();
 	}
 
+	public play(): void {
+		Application._currentFrame = 0;
+
+		this._play = true;
+	}
+
+	public stop(): void {
+		this._play = false;
+	}
+
 	public loop(): void {
 		this.input();
 		this.update();
 		this.render();
 
 		requestAnimationFrame(this.loop.bind(this));
-		Application._currentFrame += 1;
+		Application._currentFrame += this._play ? 1 : 0;
 	}
 
 	public input(): void {}
@@ -43,7 +54,7 @@ export class Application {
 		let dt = performance.now() - this._lastTime;
 		this._lastTime = performance.now();
 
-		Application._activeScene.root.update(dt);
+		Application._activeScene.root.update(this._play ? dt : 0);
 
 		Input.update();
 	}
