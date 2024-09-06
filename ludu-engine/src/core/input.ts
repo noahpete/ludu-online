@@ -88,6 +88,9 @@ export class Input {
 		if (Input._isCanvasActive) {
 			Input._keys.set(event.key, true);
 		}
+		if (event.key === "Escape") {
+			Input._isCanvasActive = false;
+		}
 		return true;
 	}
 
