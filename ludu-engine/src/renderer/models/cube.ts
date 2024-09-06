@@ -51,10 +51,10 @@ export class Cube extends Model {
 
 		let projectionMatrix = camera.projectionMatrix;
 		let viewMatrix = Matrix4x4.inverse(camera.transformMatrix);
-		let worldMatrix = this.transform.matrix;
+		let cubeTransformMatrix = this.transform.matrix;
 
 		this._shader.setVec3("u_viewPosition", camera.position);
-		this._shader.setMat4("u_model", worldMatrix);
+		this._shader.setMat4("u_model", cubeTransformMatrix);
 		this._shader.setMat4("u_projection", projectionMatrix);
 		this._shader.setMat4("u_view", viewMatrix);
 

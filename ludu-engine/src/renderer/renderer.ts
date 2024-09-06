@@ -1,5 +1,5 @@
 import { Camera } from ".";
-import { Scene } from "../scene";
+import { Entity, Scene } from "../scene";
 import { PerspectiveCamera } from "./perspective-camera";
 
 export let gl: WebGL2RenderingContext;
