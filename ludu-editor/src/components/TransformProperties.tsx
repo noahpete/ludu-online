@@ -123,11 +123,6 @@ export default function TransformProperties({
 				</div>
 
 				{/* Scale */}
-				{hasScale ? (
-					""
-				) : (
-					<div className="absolute opacity-60 bg-[var(--background-primary)] z-10 w-full h-6 select-none"></div>
-				)}
 				<div className="flex">
 					<p>Scale</p>
 					<div className="ml-auto flex">
