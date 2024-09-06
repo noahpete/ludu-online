@@ -18,7 +18,11 @@ export class OrthographicCamera extends Camera {
 		far: number,
 		transformMatrix?: Matrix4x4
 	) {
-		super(Matrix4x4.orthographic(left, right, bottom, top, near, far), transformMatrix);
+		super(
+			"orthographic",
+			Matrix4x4.orthographic(left, right, bottom, top, near, far),
+			transformMatrix
+		);
 
 		this.left = left;
 		this.right = right;

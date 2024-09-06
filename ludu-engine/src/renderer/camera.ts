@@ -3,13 +3,20 @@ import { Matrix4x4, Transform, Vector3 } from "../math";
 export class Camera {
 	protected _projectionMatrix: Matrix4x4;
 	protected _transformMatrix: Matrix4x4;
+	protected _type: string;
 
-	protected constructor(projectionMatrix?: Matrix4x4, transformMatrix?: Matrix4x4) {
+	protected constructor(type: string, projectionMatrix?: Matrix4x4, transformMatrix?: Matrix4x4) {
+		this._type = type;
+
 		this._projectionMatrix = projectionMatrix
 			? projectionMatrix
 			: Matrix4x4.orthographic(-1, 1, -1, 1, -1, 1);
 
 		this._transformMatrix = transformMatrix ? transformMatrix : Matrix4x4.identity();
+	}
+
+	public get type(): string {
+		return this._type;
 	}
 
 	public get projectionMatrix(): Matrix4x4 {

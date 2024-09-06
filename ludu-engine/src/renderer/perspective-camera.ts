@@ -14,7 +14,7 @@ export class PerspectiveCamera extends Camera {
 		far: number,
 		transformMatrix?: Matrix4x4
 	) {
-		super(Matrix4x4.perspective(fov, aspect, near, far), transformMatrix);
+		super("perspective", Matrix4x4.perspective(fov, aspect, near, far), transformMatrix);
 
 		this.fov = fov;
 		this.aspect = aspect;

@@ -8,17 +8,20 @@ import { Scene } from "../scene";
 
 export class CameraComponent extends Component {
 	private _camera: Camera;
+	private _data: any;
 
 	public constructor(parent: Entity, data?: any) {
 		super("camera", parent);
 
+		this._data = data;
+
 		const type = data?.type ? data.type : "perspective";
 
 		if (type === "perspective") {
-			const fov = data?.fov ? data.fov : 45;
-			const aspect = data?.aspect ? data.aspect : 1.67;
-			const near = data?.near ? data.near : 0.1;
-			const far = data?.far ? data.far : 10;
+			const fov = this._data?.fov ? this._data.fov : 45;
+			const aspect = this._data?.aspect ? this._data.aspect : 1.67;
+			const near = this._data?.near ? this._data.near : 0.1;
+			const far = this._data?.far ? this._data.far : 10;
 
 			this._camera = new PerspectiveCamera(
 				fov,
@@ -28,12 +31,12 @@ export class CameraComponent extends Component {
 				this._parent.worldTransform.matrix
 			);
 		} else {
-			const left = data?.left ? data.left : -1;
-			const right = data?.right ? data.right : 1;
-			const bottom = data?.bottom ? data.bottom : -1;
-			const top = data?.top ? data.top : 1;
-			const near = data?.near ? data.near : -10;
-			const far = data?.far ? data.far : 10;
+			const left = this._data?.left ? this._data.left : -1;
+			const right = this._data?.right ? this._data.right : 1;
+			const bottom = this._data?.bottom ? this._data.bottom : -1;
+			const top = this._data?.top ? this._data.top : 1;
+			const near = this._data?.near ? this._data.near : -10;
+			const far = this._data?.far ? this._data.far : 10;
 
 			this._camera = new OrthographicCamera(left, right, bottom, top, near, far);
 		}
@@ -53,4 +56,30 @@ export class CameraComponent extends Component {
 	}
 
 	public render(camera: Camera, scene: Scene) {}
+
+	public switchToPerspective(): void {
+		const fov = this._data?.fov ? this._data.fov : 45;
+		const aspect = this._data?.aspect ? this._data.aspect : 1.67;
+		const near = this._data?.near ? this._data.near : 0.1;
+		const far = this._data?.far ? this._data.far : 10;
+
+		this._camera = new PerspectiveCamera(
+			fov,
+			aspect,
+			near,
+			far,
+			this._parent.worldTransform.matrix
+		);
+	}
+
+	public switchToOrthographic(): void {
+		const left = this._data?.left ? this._data.left : -1;
+		const right = this._data?.right ? this._data.right : 1;
+		const bottom = this._data?.bottom ? this._data.bottom : -1;
+		const top = this._data?.top ? this._data.top : 1;
+		const near = this._data?.near ? this._data.near : -10;
+		const far = this._data?.far ? this._data.far : 10;
+
+		this._camera = new OrthographicCamera(left, right, bottom, top, near, far);
+	}
 }
