@@ -70,6 +70,9 @@ export class CameraComponent extends Component {
 			far,
 			this._parent.worldTransform.matrix
 		);
+
+		Renderer.camera = this._camera;
+		Renderer.resize();
 	}
 
 	public switchToOrthographic(): void {
@@ -81,5 +84,8 @@ export class CameraComponent extends Component {
 		const far = this._data?.far ? this._data.far : 10;
 
 		this._camera = new OrthographicCamera(left, right, bottom, top, near, far);
+
+		Renderer.camera = this._camera;
+		Renderer.resize();
 	}
 }

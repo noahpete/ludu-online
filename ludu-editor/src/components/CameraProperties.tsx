@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import InputDropdown from "./InputDropdown";
 import { PerspectiveCamera } from "ludu-engine/src/renderer/perspective-camera";
 import * as ld from "ludu-engine";
+import PerspectiveCameraProperties from "./PerspectiveCameraProperties";
 
 export default function CameraProperties({
 	cameraComponent,
@@ -18,10 +19,6 @@ export default function CameraProperties({
 		} else if (cameraType === "orthographic") {
 			cameraComponent.switchToOrthographic();
 		}
-
-		// TODO: temp?
-		ld.Renderer.camera = cameraComponent.camera;
-		ld.Renderer.resize();
 	}, [cameraType]);
 
 	return (
@@ -36,6 +33,12 @@ export default function CameraProperties({
 							setSelected={setCameraType}
 						/>
 					</div>
+				</div>
+
+				<div id="camera-properties" className="mt-2">
+					{cameraType === "perspective" && (
+						<PerspectiveCameraProperties cameraComponent={cameraComponent} />
+					)}
 				</div>
 			</div>
 			<div className="w-full h-1 bg-[var(--background-secondary)]"></div>
