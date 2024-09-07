@@ -28,8 +28,8 @@ export class OrthographicCamera extends Camera {
 		this.right = right;
 		this.bottom = bottom;
 		this.top = top;
-		this.near = near;
-		this.far = far;
+		this.near = far;
+		this.far = near;
 	}
 
 	public updateMatrix(fov: number, aspect: number, near: number, far: number): void {
