@@ -45,7 +45,7 @@ export class Renderer {
 
 	public static resize(width?: number, height?: number): void {
 		if (!Renderer._canvas) {
-			console.warn("Canvas is not initialized.");
+			console.warn("Canvas is not initialized. Cannot resize.");
 			return;
 		}
 
