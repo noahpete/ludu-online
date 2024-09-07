@@ -24,6 +24,10 @@ export abstract class Shader {
 		return this._name;
 	}
 
+	public get program(): WebGLProgram {
+		return this._program;
+	}
+
 	public static create(source: string, type: GLenum): WebGLShader {
 		let shader = gl.createShader(type);
 
