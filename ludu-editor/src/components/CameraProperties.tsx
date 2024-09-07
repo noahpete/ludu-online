@@ -28,7 +28,7 @@ export default function CameraProperties({
 		<>
 			<div id="upper" className="p-2">
 				<div id="type" className="flex">
-					<p>Type</p>
+					<p className="mt-0.5 align-middle">Type</p>
 					<div className="ml-auto">
 						<InputDropdown
 							options={["perspective", "orthographic"]}

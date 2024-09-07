@@ -19,7 +19,7 @@ export default function App() {
 
 		const camera = new ld.Entity("__CAMERA__");
 		const camComp = camera.addComponentByType("camera", {
-			type: "orthographic",
+			type: "perspective",
 		}) as ld.CameraComponent;
 		camera.setRotation(0, 0, 0);
 		camera.setPosition(0, 1, 4);
@@ -27,9 +27,9 @@ export default function App() {
 		ld.Renderer.camera = camComp.camera;
 
 		// cube
-		let cube = new ld.Entity("cube");
-		cube.addComponentByType("model", { type: "cube" });
-		cube.setRotation(0, 0, 0);
+		// let cube = new ld.Entity("cube");
+		// cube.addComponentByType("model", { type: "cube" });
+		// cube.setRotation(0, 0, 0);
 
 		// grid
 		let grid = new ld.Entity("__GRID__");
@@ -37,6 +37,10 @@ export default function App() {
 		grid.rotate(-90, 0, 0);
 		grid.move(-5, 0, 5);
 		grid.setScale(10.0, 10.0, 1.0);
+
+		// gizmo
+		let gizmo = new ld.Entity("__GIZMO__");
+		gizmo.addComponentByType("model", { type: "gizmo" });
 
 		// lights
 		let light = new ld.Entity("light");
@@ -46,10 +50,6 @@ export default function App() {
 		let light2 = new ld.Entity("light2");
 		light2.addComponentByType("light", { type: "point", color: new ld.Vector3(0.4, 0.4, 0.4) });
 		light2.setPosition(3, 0, 2);
-
-		cube.addUpdateCallback((dt: number) => {
-			cube.rotate(0.01 * dt, 0.02 * dt, 0);
-		});
 
 		application.start();
 
