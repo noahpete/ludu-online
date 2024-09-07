@@ -1,6 +1,7 @@
 import { Camera } from "../../renderer";
 import { Model } from "../../renderer/model";
 import { Cube } from "../../renderer/models/cube";
+import { Gizmo } from "../../renderer/models/gizmo";
 import { Grid } from "../../renderer/models/grid";
 import { Quad } from "../../renderer/models/quad";
 import { Component } from "../component";
@@ -20,6 +21,10 @@ export class ModelComponent extends Component {
 
 			case "grid":
 				this._model = new Grid();
+				break;
+
+			case "gizmo":
+				this._model = new Gizmo();
 				break;
 
 			case "quad":
