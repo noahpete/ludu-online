@@ -54,24 +54,43 @@ export class Matrix4x4 {
 		right: number,
 		bottom: number,
 		top: number,
-		nearClip: number,
-		farClip: number
+		near: number,
+		far: number
 	): Matrix4x4 {
 		let m = new Matrix4x4();
 
-		let lr: number = 1.0 / (left - right);
-		let bt: number = 1.0 / (bottom - top);
-		let nf: number = 1.0 / (nearClip - farClip);
+		m._data = [
+			2 / (right - left),
+			0,
+			0,
+			0,
+			0,
+			2 / (top - bottom),
+			0,
+			0,
+			0,
+			0,
+			2 / (near - far),
+			0,
 
-		m._data[0] = -2.0 * lr;
+			(left + right) / (left - right),
+			(bottom + top) / (bottom - top),
+			(near + far) / (near - far),
+			1,
+		];
+		// let lr: number = 1.0 / (left - right);
+		// let bt: number = 1.0 / (bottom - top);
+		// let nf: number = 1.0 / (nearClip - farClip);
 
-		m._data[5] = -2.0 * bt;
+		// m._data[0] = -2.0 * lr;
 
-		m._data[10] = -2.0 * nf;
+		// m._data[5] = -2.0 * bt;
 
-		m._data[12] = (left + right) * lr;
-		m._data[13] = (top + bottom) * bt;
-		m._data[14] = (farClip + nearClip) * nf;
+		// m._data[10] = -2.0 * nf;
+
+		// m._data[12] = (left + right) * lr;
+		// m._data[13] = (top + bottom) * bt;
+		// m._data[14] = (farClip + nearClip) * nf;
 
 		return m;
 	}
