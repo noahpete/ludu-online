@@ -27,9 +27,9 @@ export default function App() {
 		ld.Renderer.camera = camComp.camera;
 
 		// cube
-		// let cube = new ld.Entity("cube");
-		// cube.addComponentByType("model", { type: "cube" });
-		// cube.setRotation(0, 0, 0);
+		let cube = new ld.Entity("cube");
+		cube.addComponentByType("model", { type: "cube" });
+		cube.setRotation(0, 0, 0);
 
 		// grid
 		let grid = new ld.Entity("__GRID__");
@@ -41,6 +41,7 @@ export default function App() {
 		// gizmo
 		let gizmo = new ld.Entity("__GIZMO__");
 		gizmo.addComponentByType("model", { type: "gizmo" });
+		gizmo.setPosition(0, 0.01, 0);
 
 		// lights
 		let light = new ld.Entity("light");
